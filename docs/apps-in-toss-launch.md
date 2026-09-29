@@ -4,15 +4,15 @@
 
 ## 한눈에 보기
 
-| 구분                                            | 상태                           |
-| ----------------------------------------------- | ------------------------------ |
-| Figma 플로우 화면 구현                          | 완료                           |
-| SDK 3.x 마이그레이션 (2.6.1 → 3.6.0)            | 완료                           |
-| 우편번호 iframe 위젯 제거 → 도로명주소 API 검색 | 완료 (승인키 발급 필요)        |
-| API 주소를 빌드용 HTTPS 주소로 전환             | 완료                           |
-| purchase 서버 CORS에 미니앱 Origin 추가         | 코드 준비됨, 반영·배포 필요    |
-| 토스 로그인 연동                                | **막힘** (auth 서버 작업 필요) |
-| 콘솔 앱 등록 · 검수 · 출시                      | 시작 전                        |
+| 구분                                            | 상태                                                         |
+| ----------------------------------------------- | ------------------------------------------------------------ |
+| Figma 플로우 화면 구현                          | 완료                                                         |
+| SDK 3.x 마이그레이션 (2.6.1 → 3.6.0)            | 완료                                                         |
+| 우편번호 iframe 위젯 제거 → 도로명주소 API 검색 | 완료 (승인키 발급 필요)                                      |
+| API 주소를 빌드용 HTTPS 주소로 전환             | 완료                                                         |
+| purchase 서버 CORS에 미니앱 Origin 추가         | PR 올림 (repercent-common-api#825), 배포 필요                |
+| 토스 로그인 연동                                | 설계 완료, **auth 서버 작업 필요** ([설계](./toss-login.md)) |
+| 콘솔 앱 등록 · 검수 · 출시                      | 시작 전                                                      |
 
 ## 완료한 작업
 
@@ -55,34 +55,20 @@
 ### 1. 토스 로그인 연동 — 출시 필수, 가장 먼저
 
 회원 ID가 없으면 신청·판매 내역이 동작하지 않아요. 지금은 로그인 안내 문구만 보여요.
+흐름, 결정할 것(토큰 발급 방식), 담당별 할 일은 **[토스 로그인 연동 설계](./toss-login.md)**에 정리했어요.
 
-**백엔드 (repercent-auth)**
-
-- [ ] `/auth/toss-sign`(토스 인가 코드 → Firebase 커스텀 토큰)이 로컬 `dev` 브랜치에만 있고 `origin/dev`, `origin/main`에 없음 → 배포 필요
-- [ ] `/auth/sign`의 `UserAuth`에 TOSS가 없음 → 토스 사용자 가입·로그인 경로 추가
-- [ ] 로그인 결과로 리퍼센트 회원 ID와 **토큰**을 돌려주기. iOS는 서드파티 쿠키를 막아서 쿠키 방식은 동작하지 않아요.
-- [ ] auth 서버 CORS에 미니앱 Origin 4개 추가 (아래 2번과 같은 목록)
-- [ ] 토스 API 호출용 mTLS 인증서·복호화 키 설정, 방화벽 Outbound `apps-in-toss-api.toss.im` 허용
-
-**프론트 (이 저장소)**
-
-- [ ] `appLogin()` → auth 서버 교환 → `setUserId()` (`src/utils/user.ts`) 흐름 추가
-- [ ] 받은 토큰을 `purchaseApi` 요청 헤더에 붙이기
-- [ ] 회원 ID 저장소를 SDK `Storage` API로 옮길지 결정 (SDK 3.x 문서가 `localStorage` 직접 사용을 주의하라고 안내)
-
-**콘솔 · 운영**
-
-- [ ] 사업자 등록 (토스 로그인 사용 조건, 검토 영업일 1~2일)
-- [ ] 콘솔 토스 로그인 설정: 약관 동의, 동의 항목, 약관 링크, 연결 끊기 콜백 URL
+- auth 서버: `/auth/toss-sign`은 `origin/dev`에 있고 main에는 없어요. 토큰 발급 방식 결정, TOSS 가입 경로, 응답 본문 토큰 반환, CORS, 연결 끊기 콜백, mTLS·복호화 키 설정이 필요해요.
+- 미니앱: 로그인 모듈, `Authorization` 헤더, 로그인 시작 위치(사용자 동작에서만), SDK `Storage` 전환
+- 콘솔 · 운영: 사업자 등록, 토스 로그인 약관·동의 항목·연결 끊기 콜백 설정
 
 ### 2. purchase 서버 CORS 반영 — 출시 필수
 
 지금 운영·개발 purchase 서버 모두 미니앱 Origin 요청을 403으로 거부해요.
 
-- [ ] `repercent-common-api`의 `app/purchase/.../global/config/CorsConfig.java`에 아래 Origin 추가 + `CorsConfigTest` 추가 (코드 준비됨)
+- [x] `app/purchase` `CorsConfig`에 아래 Origin 추가 + `CorsConfigTest` 추가 → repercent/repercent-common-api#825 (dev 대상)
   - `https://repercent-toss.apps.tossmini.com`, `https://repercent-toss.private-apps.tossmini.com`
   - `https://repercent-toss.web.tossmini.com`, `https://repercent-toss.private-web.tossmini.com`
-- [ ] dev 배포 → QR 테스트 → main 배포
+- [ ] #825 머지 → dev 배포 → QR 테스트 → main 대상 PR · 배포
 - 콘솔 appName이 `repercent-toss`가 아니면 Origin과 `apps-in-toss.config.ts`를 같이 바꿔야 해요. appName은 등록 후 바꿀 수 없어요.
 
 ### 3. 도로명주소 API 승인키 — 출시 필수
