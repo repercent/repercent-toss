@@ -1,6 +1,9 @@
 # 토스 로그인 연동 설계
 
-2026-09-29 작성. 아직 구현 전이며, 앱인토스 개발자센터 문서와 현재 저장소 코드를 기준으로 정리했어요.
+2026-09-29 작성. 토큰 발급 방식은 **B로 결정**했고, 미니앱과 auth 서버 코드를 구현했어요. 배포와 콘솔 설정은 아직이에요.
+
+- 미니앱: 이 저장소 `feat/toss-login` 브랜치
+- auth 서버: repercent-auth `feat/toss-login-token` 브랜치
 
 ## 왜 필요한가
 
@@ -42,7 +45,9 @@ sequenceDiagram
 | 토큰 전달   | `/auth/sign`은 쿠키로만 발급 → iOS에서 동작 안 함, 본문 반환 추가 필요                                         | 처음부터 응답 본문으로 반환                                                   |
 | 서버 변경   | `/auth/sign`에 토스 가입 경로와 본문 토큰 반환 추가                                                            | `/auth/toss-sign`에 회원 조회/생성과 토큰 발급 추가                           |
 
-웹의 Firebase 로그인 흐름과 맞추고 싶다면 A, 미니앱만 놓고 보면 B가 단순해요.
+웹의 Firebase 로그인 흐름과 맞추고 싶다면 A, 미니앱만 놓고 보면 B가 단순해요. → **B로 결정 (2026-09-29)**
+
+토스 회원은 `firebase_uid = toss_{userKey}`로 식별하고, 기존 웹 회원과 이메일로 합치지 않아요. 두 계정을 연결할지는 별도로 정해야 해요.
 
 ## 할 일
 
@@ -58,13 +63,13 @@ sequenceDiagram
 
 ### auth 서버 (repercent-auth)
 
-- [ ] 토큰 발급 방식 결정 (위 표)
-- [ ] `/auth/toss-sign`을 main에 반영 (현재 `origin/dev`에만 있음)
-- [ ] 토스 사용자 가입·로그인 경로 추가. 로그인 제공자(`UserAuth`)에 TOSS 추가
-- [ ] 토스에서 받은 휴대전화 번호를 복호화해 회원 정보에 저장 (현재는 이름·이메일만 복호화)
-- [ ] 리퍼센트 access token을 응답 본문으로 반환하고, 만료 시 재로그인 흐름 정의
-- [ ] 테스트용 인가 코드 처리는 dev 프로필에서만 동작하도록 제한
-- [ ] CORS 허용 Origin에 미니앱 Origin 4개 추가 (현재 localhost, `*.repercent.com`만 허용)
+- [x] 토큰 발급 방식 결정 (위 표)
+- [ ] `feat/toss-login-token` → dev 배포 → QR 테스트 → main 반영 (`/auth/toss-sign`은 현재 `origin/dev`에만 있음)
+- [x] 토스 사용자 가입·로그인 경로 추가. 로그인 제공자(`UserAuth`)에 TOSS 추가
+- [x] 토스에서 받은 휴대전화 번호를 복호화해 회원 정보에 저장 (현재는 이름·이메일만 복호화)
+- [x] 리퍼센트 access token을 응답 본문으로 반환 (`userId`, `accessToken`, `expiresIn`). 만료되면 미니앱이 다음 사용자 동작에서 다시 로그인
+- [x] 테스트용 인가 코드 처리는 dev 프로필에서만 동작하도록 제한
+- [x] CORS 허용 Origin에 미니앱 Origin 4개 추가 (현재 localhost, `*.repercent.com`만 허용)
   - `https://repercent-toss.apps.tossmini.com`, `https://repercent-toss.private-apps.tossmini.com`
   - `https://repercent-toss.web.tossmini.com`, `https://repercent-toss.private-web.tossmini.com`
 - [ ] 연결 끊기 콜백 엔드포인트: Basic Auth 검증 후 `UNLINK` · `WITHDRAWAL_TERMS` · `WITHDRAWAL_TOSS`에 맞춰 로그아웃·회원 처리
@@ -77,21 +82,22 @@ sequenceDiagram
 
 ### 미니앱 (이 저장소)
 
-- [ ] 로그인 모듈 추가 (예: `src/auth/login.ts`의 `ensureLogin()`): `appLogin()` → `/auth/toss-sign` → 토큰·회원 ID 저장
-- [ ] auth 서버 주소 환경변수 추가 (예: `VITE_AUTH_API_URL`, 빌드는 HTTPS)
-- [ ] `purchaseApi`(`src/utils/api.ts`)에 `Authorization` 헤더 인터셉터, 401이면 토큰 삭제 후 재로그인
-- [ ] 로그인은 **사용자 동작에서만** 시작: 판매 내역 진입, 유의사항의 "수거 신청하기". 앱 진입 직후 로그인 창을 띄우면 검수에서 반려돼요.
-- [ ] 홈의 "진행 중인 판매 N건"은 이미 로그인된 경우에만 조회
-- [ ] 회원 정보 저장을 SDK `Storage` API로 전환하고 `src/utils/user.ts`의 `getUserId`를 비동기로 변경. 지금은 `localStorage`를 쓰는데, SDK 3.x 문서가 `localStorage` 직접 사용을 주의하라고 안내해요.
-- [ ] 로그인 실패·취소, 토스 연결 해제 후 재로그인 안내 문구 ("토스 연결이 해제되어 다시 로그인해야 해요")
+- [x] 로그인 모듈: `src/auth/login.ts`(`appLogin()` → `/auth/toss-sign`), 앱 전체 상태는 `AuthProvider` · `useAuth().login()`
+- [x] auth 서버 주소 환경변수 추가 (예: `VITE_AUTH_API_URL`, 빌드는 HTTPS)
+- [x] `purchaseApi`(`src/utils/api.ts`)에 `Authorization` 헤더 인터셉터, 401이면 세션 삭제 후 로그인 안내
+- [x] 로그인은 **사용자 동작에서만** 시작: 판매 내역 진입, 유의사항의 "수거 신청하기". 앱 진입 직후 로그인 창을 띄우면 검수에서 반려돼요.
+- [x] 홈의 "진행 중인 판매 N건"은 이미 로그인된 경우에만 조회
+- [x] 세션은 SDK `Storage` API에 저장 (`src/auth/session.ts`). 기존 `localStorage` 기반 `src/utils/user.ts` 제거
+- [x] 로그인 실패·취소, 로그인 만료 안내
+- [ ] 토스 연결 해제 후 재로그인 안내 문구 ("토스 연결이 해제되어 다시 로그인해야 해요") — 콜백 처리와 함께
 
 ## 테스트
 
-| 환경              | 방법                                                                                              | 확인할 것                                                              |
-| ----------------- | ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| 로컬 브라우저     | `npm run dev`. AIT Devtools 목업의 `appLogin()`은 `mock-auth-<uuid>` 코드와 `SANDBOX`를 돌려줘요. | auth 서버 dev의 테스트용 인가 코드 처리와 목업 코드 형식을 맞춰야 해요 |
-| 콘솔 QR (토스 앱) | 번들 업로드 후 QR로 실행. Origin은 `private-apps`, referrer는 `DEFAULT`                           | 첫 로그인 약관 화면, 재방문 시 화면 없이 로그인, 신청·판매 내역        |
-| 연결 해제         | 토스 앱 > 설정 > 인증 및 보안 > 토스로 로그인한 서비스 > 연결 끊기                                | 콜백 수신, 앱 재진입 시 재로그인 안내                                  |
+| 환경              | 방법                                                                                              | 확인할 것                                                                                                    |
+| ----------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| 로컬 브라우저     | `npm run dev`. AIT Devtools 목업의 `appLogin()`은 `mock-auth-<uuid>` 코드와 `SANDBOX`를 돌려줘요. | auth 서버 dev에 `feat/toss-login-token`이 배포되면 목업 코드로 바로 로그인돼요 (local·dev 프로필에서만 허용) |
+| 콘솔 QR (토스 앱) | 번들 업로드 후 QR로 실행. Origin은 `private-apps`, referrer는 `DEFAULT`                           | 첫 로그인 약관 화면, 재방문 시 화면 없이 로그인, 신청·판매 내역                                              |
+| 연결 해제         | 토스 앱 > 설정 > 인증 및 보안 > 토스로 로그인한 서비스 > 연결 끊기                                | 콜백 수신, 앱 재진입 시 재로그인 안내                                                                        |
 
 ## 참고
 
