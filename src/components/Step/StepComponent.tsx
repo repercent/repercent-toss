@@ -268,7 +268,7 @@ const StepComponent = (props: Props) => {
       {/* BottomBtn */}
       <BottomButton>
         <Button onClick={onClick} disabled={!isValid}>
-          견적보기
+          견적 보기
         </Button>
       </BottomButton>
 
@@ -440,8 +440,7 @@ const ChipGroup = styled.div`
 
 const CheckModel = styled.p`
   position: relative;
-  color: ${({ theme }) => theme.gray[700]};
-  text-decoration: underline;
+  color: ${({ theme }) => theme.pink[200]};
   padding-left: 20px;
   padding-top: 16px;
   cursor: pointer;
@@ -451,12 +450,11 @@ const CheckModel = styled.p`
     left: 0;
     top: calc(50% + 8px);
     transform: translateY(-50%);
-    background-image: url('/ico/ico_tip.svg');
+    background-image: url('/ico/ico_tips.svg');
     background-size: cover;
     width: 16px;
     height: 16px;
     display: block;
-    color: ${({ theme }) => theme.gray[700]};
   }
 `;
 

@@ -1,89 +1,61 @@
-import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { PurchaseSelectState, ShippingInfo } from '../../type/purchase';
+import { PurchaseSelectState, PurchaseType } from '../../type/purchase';
 
-import H2 from '../Common/Title/H2';
-import H3 from '../Common/Title/H3';
-import Address from './Address';
+const KIT_TYPES: { type: PurchaseType; caption: string; title: string; description: string }[] = [
+  {
+    type: 'KIT',
+    caption: '평균 3~4일',
+    title: '수거 키트 신청',
+    description: '안전한 배송을 위한 전용 키트를 보내드려요',
+  },
+  {
+    type: 'NONE_KIT',
+    caption: '평균 1~2일',
+    title: '키트 없이 신청',
+    description: '직접 택배 포장 후 문 앞에 두시면 수거해요',
+  },
+];
 
 const KitComponent = () => {
   const navigate = useNavigate();
   const { state } = useLocation() as { state: PurchaseSelectState };
 
-  const [purchaseType, setPurchaseType] = useState('');
-  const [shippingInfo, setShippingInfo] = useState<ShippingInfo>({
-    name: '',
-    phone: '',
-    zipcode: '',
-    address1: '',
-    address2: '',
-    memo: '메모',
-    memoText: '메모',
-  });
-
-  const handleApply = () => {
-    navigate('/agreement', {
-      state: {
-        ...state,
-        purchaseType,
-        ...shippingInfo,
-      },
-    });
+  const handleSelect = (purchaseType: PurchaseType) => {
+    navigate('/address', { state: { ...state, purchaseType } });
   };
 
-  const isEmptyValue = (obj: ShippingInfo) =>
-    Object.values(obj).some((value) => value.trim() === '');
-
-  const isDisabled = purchaseType.trim() === '' || isEmptyValue(shippingInfo);
-
   return (
-    <>
-      {purchaseType === '' ? (
-        <PickupBase>
-          <PickupTitle>
-            <H2>수거 키트 사용 여부를 선택해 주세요</H2>
-            <PickupDes>박스나 완충재 준비가 어렵다면, 수거 키트를 이용하실 수 있어요</PickupDes>
-          </PickupTitle>
+    <PickupBase>
+      <PickupTitle>
+        <Title>수거 키트 사용 여부를 선택해 주세요</Title>
+        <PickupDes>
+          박스나 완충재 준비가 어렵다면, 수거 키트를
+          <br />
+          이용하실 수 있어요
+        </PickupDes>
+      </PickupTitle>
 
-          <TypeMenu>
-            <TypeItem onClick={() => setPurchaseType('KIT')}>
-              <TypeLabel>평균 3~4일</TypeLabel>
+      <TypeMenu>
+        {KIT_TYPES.map(({ type, caption, title, description }) => (
+          <li key={type}>
+            <TypeButton type="button" onClick={() => handleSelect(type)}>
+              <Caption>{caption}</Caption>
               <TypeTitle>
-                <H3>수거 키트 신청</H3>
-                <TypeDes>안전한 배송을 위한 전용 키트를 보내드려요</TypeDes>
+                <TypeName>{title}</TypeName>
+                <TypeDes>{description}</TypeDes>
               </TypeTitle>
-            </TypeItem>
-
-            <TypeItem onClick={() => setPurchaseType('NONE_KIT')}>
-              <TypeLabel>평균 1~2일</TypeLabel>
-              <TypeTitle>
-                <H3>키트 없이 신청</H3>
-                <TypeDes>직접 택배 포장 후 문 앞에 두시면 수거해요</TypeDes>
-              </TypeTitle>
-            </TypeItem>
-
-            <TypeInfo>
-              <TypeDesItem>
-                견적은 입고 시 상태 기준으로 확인돼요. 안전하게 포장해 주세요
-              </TypeDesItem>
-              <TypeDesItem>
-                한 키트에 최대 5개까지만 넣는걸 권장해요. 그 이상이라면 별도의 박스를 준비해주셔야
-                해요
-              </TypeDesItem>
-            </TypeInfo>
-          </TypeMenu>
-        </PickupBase>
-      ) : (
-        <Address
-          shippingInfo={shippingInfo}
-          setShippingInfo={setShippingInfo}
-          handleApply={handleApply}
-          isDisabled={isDisabled}
-        />
-      )}
-    </>
+            </TypeButton>
+          </li>
+        ))}
+        <Notice>
+          견적은 입고 시 상태 기준으로 확인돼요
+          <br />
+          안전하게 포장해 주세요
+        </Notice>
+      </TypeMenu>
+    </PickupBase>
   );
 };
 export default KitComponent;
@@ -92,19 +64,27 @@ const PickupBase = styled.div`
   display: flex;
   flex-direction: column;
   gap: 40px;
-
-  padding: 16px;
+  padding: 24px;
 `;
 
 const PickupTitle = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
+`;
+
+const Title = styled.h2`
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 28px;
+  letter-spacing: -0.44px;
+  color: #202938;
 `;
 
 const PickupDes = styled.p`
   font-size: 16px;
-  color: ${({ theme }) => theme.gray[400]};
+  line-height: 24px;
+  color: ${({ theme }) => theme.gray[500]};
 `;
 
 const TypeMenu = styled.ul`
@@ -113,38 +93,49 @@ const TypeMenu = styled.ul`
   gap: 16px;
 `;
 
-const TypeItem = styled.li`
-  border-radius: 8px;
-  border: 1px solid ${({ theme }) => theme.gray[200]};
+const TypeButton = styled.button`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
   padding: 16px;
-  cursor: pointer;
+  border: 1px solid ${({ theme }) => theme.gray[200]};
+  border-radius: 8px;
+  background-color: #fff;
+  text-align: left;
 `;
 
-const TypeLabel = styled.span`
-  background-color: ${({ theme }) => theme.secondary[50]};
-  padding: 4px;
+const Caption = styled.span`
+  padding: 2px 4px;
   border-radius: 4px;
+  background-color: ${({ theme }) => theme.secondary[50]};
+  font-size: 12px;
+  line-height: 18px;
   color: ${({ theme }) => theme.secondary[700]};
 `;
 
 const TypeTitle = styled.div`
-  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 `;
 
-const TypeDes = styled(PickupDes)`
-  font-size: 14px;
+const TypeName = styled.strong`
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 27px;
+  color: #202938;
 `;
 
-const TypeInfo = styled.ul``;
-
-const TypeDesItem = styled.li`
-  position: relative;
+const TypeDes = styled.p`
   font-size: 14px;
+  line-height: 21px;
+  color: ${({ theme }) => theme.gray[500]};
+`;
+
+const Notice = styled.li`
+  font-size: 14px;
+  line-height: 21px;
   color: ${({ theme }) => theme.gray[400]};
-  padding-left: 12px;
-  &:before {
-    position: absolute;
-    content: '*';
-    left: 0;
-  }
 `;

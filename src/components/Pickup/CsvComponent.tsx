@@ -1,85 +1,42 @@
-import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { PurchaseSelectState, ShippingInfo } from '../../type/purchase';
+import { PurchaseSelectState } from '../../type/purchase';
 
-import H2 from '../Common/Title/H2';
-import Address from './Address';
+const CSV_COMPANIES = [
+  { company: 'EMART', label: '이마트24', logo: '/ico/ico_pickup_emart.svg', width: 126 },
+  { company: 'CU', label: 'CU', logo: '/ico/ico_pickup_cu.svg', width: 80 },
+];
 
 const CsvComponent = () => {
   const navigate = useNavigate();
   const { state } = useLocation() as { state: PurchaseSelectState };
 
-  const [csvCompany, setCsvCompany] = useState('');
-  const [shippingInfo, setShippingInfo] = useState<ShippingInfo>({
-    name: '',
-    phone: '',
-    zipcode: '',
-    address1: '',
-    address2: '',
-    memo: '메모',
-    memoText: '메모',
-  });
-
-  const handleApply = () => {
-    navigate('/agreement', {
-      state: {
-        ...state,
-        purchaseType: csvCompany,
-        ...shippingInfo,
-      },
-    });
+  const handleSelect = (csvCompany: string) => {
+    navigate('/address', { state: { ...state, purchaseType: 'CSV', csvCompany } });
   };
 
-  const isEmptyValue = (obj: ShippingInfo) =>
-    Object.values(obj).some((value) => value.trim() === '');
-
-  const isDisabled = csvCompany.trim() === '' || isEmptyValue(shippingInfo);
-
   return (
-    <>
-      {csvCompany === '' ? (
-        <PickupBase>
-          <PickupTitle>
-            <H2>보내실 편의점을 선택해 주세요</H2>
-            <PickupDes>
-              선택이 완료되면 예약번호가 발급돼요 <br />
-              기기를 포장한 후, 선택한 편의점에서 접수해 주세요
-            </PickupDes>
-          </PickupTitle>
+    <PickupBase>
+      <PickupTitle>
+        <Title>보내실 편의점을 선택해 주세요</Title>
+        <PickupDes>
+          선택이 완료되면 예약번호가 발급돼요
+          <br />
+          기기를 포장한 후, 선택한 편의점에서 접수해 주세요
+        </PickupDes>
+      </PickupTitle>
 
-          <TypeMenu>
-            <TypeItem onClick={() => setCsvCompany('EMART')}>
-              <ImageBox>
-                <img
-                  src={'/ico/ico_pickup_emart.svg'}
-                  alt="emart icon"
-                  style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                />
-              </ImageBox>
-            </TypeItem>
-
-            <TypeItem onClick={() => setCsvCompany('CU')}>
-              <CuBox>
-                <img
-                  src={'/ico/ico_pickup_cu.svg'}
-                  alt="cu icon"
-                  style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                />
-              </CuBox>
-            </TypeItem>
-          </TypeMenu>
-        </PickupBase>
-      ) : (
-        <Address
-          shippingInfo={shippingInfo}
-          setShippingInfo={setShippingInfo}
-          handleApply={handleApply}
-          isDisabled={isDisabled}
-        />
-      )}
-    </>
+      <TypeMenu>
+        {CSV_COMPANIES.map(({ company, label, logo, width }) => (
+          <li key={company}>
+            <TypeButton type="button" aria-label={label} onClick={() => handleSelect(company)}>
+              <img src={logo} alt="" width={width} />
+            </TypeButton>
+          </li>
+        ))}
+      </TypeMenu>
+    </PickupBase>
   );
 };
 export default CsvComponent;
@@ -88,51 +45,47 @@ const PickupBase = styled.div`
   display: flex;
   flex-direction: column;
   gap: 40px;
-
-  padding: 16px;
+  padding: 24px;
 `;
 
 const PickupTitle = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
+`;
+
+const Title = styled.h2`
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 28px;
+  letter-spacing: -0.44px;
+  color: #202938;
 `;
 
 const PickupDes = styled.p`
   font-size: 16px;
-  color: ${({ theme }) => theme.gray[400]};
+  line-height: 24px;
+  color: ${({ theme }) => theme.gray[500]};
 `;
 
 const TypeMenu = styled.ul`
-  display: flex;
-  gap: 16px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
 `;
 
-const TypeItem = styled.li`
-  flex: 1;
+const TypeButton = styled.button`
+  width: 100%;
+  aspect-ratio: 1 / 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
+  padding: 12px;
   border: 1px solid ${({ theme }) => theme.gray[200]};
-  padding: 16px;
-  cursor: pointer;
-`;
+  border-radius: 8px;
+  background-color: #fff;
 
-const ImageBox = styled.div`
-  position: relative;
-  width: 90%;
-  aspect-ratio: 1 / 1;
-
-  @media (min-width: 768px) {
-    width: 50%;
-  }
-`;
-
-const CuBox = styled(ImageBox)`
-  width: 60%;
-
-  @media (min-width: 768px) {
-    width: 30%;
+  & img {
+    max-width: 100%;
   }
 `;

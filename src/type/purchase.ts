@@ -73,48 +73,48 @@ export interface CancelContainerProps extends PurchaseIdProps {
 }
 
 export type PurchaseType = 'KIT' | 'NONE_KIT' | 'CSV' | 'VISIT';
-export type ActionButtonType =
-  | 'CANCEL_PURCHASE' // 내 폰 팔기 취소
-  | 'CANCEL_SALE' // 판매 취소
-  | 'CONFIRM_SALE' // 판매 확정
-  | 'ACCOUNT_SAVE' // 계좌 번호 입력
-  | 'REQUEST_PICKUP' // 수거 신청
-  | 'REVIEW';
 
-export interface PurchaseDetailProps {
-  purchaseDetailData: PurchaseDetailData;
+/** 판매 내역 목록 (GET /purchases/product/user/{userId}) */
+export interface PurchaseHistoryItem {
+  purchaseId: number;
+  purchaseProductId: number;
+  category: string | null;
+  subcategory: string | null;
+  model: string | null;
+  storage: string | null;
+  image: string | null;
+  /** 검수 완료(300) 전에는 null */
+  price: number | null;
+  status: number;
 }
 
+/** 판매 상세 (GET /purchases/{purchaseId}) */
 export interface PurchaseDetailData {
+  purchaseId: number;
+  purchaseUid: string;
+  purchaseType: PurchaseType;
+  status: number;
+  price: number | null;
+
+  category: string | null;
+  subcategory: string | null;
+  model: string | null;
+  storage: string | null;
+  image: string | null;
+
+  name: string | null;
+  phone: string | null;
+  zipcode: string | null;
   address1: string | null;
   address2: string | null;
 
-  category: string;
-  subcategory: string | null;
+  csvCompany: 'CU' | 'EMART' | null;
   csvCode: string | null;
-  csvCompany: string | null;
-  image: string | null;
-  model: string | null;
-  name: string | null;
-  phone: string | null;
-  grade: number | null;
-  price: string | null;
-
-  purchaseId: number;
-  purchaseType: PurchaseType;
-  purchaseUid: string;
-
   reservationDay: string | null;
   reservationTime: string | null;
 
-  status: number;
-  storage: string | null;
-  zipcode: string | null;
-
   kitTrackingNumber: string | null;
-  kitDeliveredAt: string | null;
-  kitArrivedAt: string | null;
-
+  pickupTrackingNumber: string | null;
   returnTrackingNumber: string | null;
 
   userId: number;
@@ -128,7 +128,11 @@ export interface ShippingInfo {
   zipcode: string;
   address1: string; // 기본주소
   address2: string; // 상세주소
-
-  memo: string;
-  memoText: string;
 }
+
+/** 수거 신청 화면 간에 전달되는 신청 정보 */
+export type PurchaseApplyState = PurchaseSelectState &
+  Partial<ShippingInfo> & {
+    purchaseType?: PurchaseType;
+    csvCompany?: string;
+  };

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { PurchaseGrade, PurchaseSelectState } from '../../type/purchase';
+import { IMAGE_URL } from '../../constant/env';
 
 import H2 from '../Common/Title/H2';
 import H5 from '../Common/Title/H5';
@@ -48,7 +49,7 @@ const GradeComponent = (props: GradeProps) => {
           <ProductInfoBox>
             <ProductImg>
               <img
-                src={`${import.meta.env.VITE_IMAGE_URL}/${gradeImage}`}
+                src={`${IMAGE_URL}/${gradeImage}`}
                 alt="제품 이미지"
                 style={{ width: '100%', height: '100%', objectFit: 'contain' }}
               />
