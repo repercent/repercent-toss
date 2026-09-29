@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
 import styled from 'styled-components';
 
 import { PurchaseApplyState } from '../../type/purchase';
+import { purchaseApi } from '../../utils/api';
 import { getUserId } from '../../utils/user';
 import { getErrorMessage } from '../../utils/format';
 import useToast from '../../hooks/useToast';
@@ -71,7 +71,7 @@ const AgreementComponent = () => {
 
     setSubmitting(true);
     try {
-      const res = await axios.post<number>(`/api/purchases/product`, body);
+      const res = await purchaseApi.post<number>(`/purchases/product`, body);
       navigate('/complete', { replace: true, state: { purchaseId: res.data } });
     } catch (err) {
       showToast(getErrorMessage(err, '신청에 실패했어요. 잠시 후 다시 시도해 주세요'));

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 
 import { PurchaseHistoryItem } from '../type/purchase';
+import { purchaseApi } from '../utils/api';
 import { getUserId } from '../utils/user';
 
 import HistoryComponent from '../components/History/HistoryComponent';
@@ -17,7 +17,9 @@ const HistoryContainer = () => {
 
     const fetchHistory = async () => {
       try {
-        const res = await axios.get<PurchaseHistoryItem[]>(`/api/purchases/product/user/${userId}`);
+        const res = await purchaseApi.get<PurchaseHistoryItem[]>(
+          `/purchases/product/user/${userId}`
+        );
         setItems(res.data ?? []);
       } catch {
         setError(true);

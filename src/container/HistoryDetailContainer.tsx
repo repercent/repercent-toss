@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
 import styled from 'styled-components';
 
 import { PurchaseDetailData } from '../type/purchase';
 import { getPurchaseStatusView, PurchaseAction, PURCHASE_STATUS } from '../constant/purchase';
 import { CS_URL, getTrackingUrl } from '../constant/env';
+import { purchaseApi } from '../utils/api';
 import { getUserId } from '../utils/user';
 import { getErrorMessage } from '../utils/format';
 import { openExternalURL } from '../utils/toss';
@@ -53,7 +53,7 @@ const HistoryDetailContainer = () => {
 
   const fetchDetail = useCallback(async () => {
     try {
-      const res = await axios.get<PurchaseDetailData>(`/api/purchases/${purchaseId}`);
+      const res = await purchaseApi.get<PurchaseDetailData>(`/purchases/${purchaseId}`);
       if (res.data.userId !== userId) {
         setMessage('판매 내역을 찾을 수 없어요');
         return;
@@ -97,7 +97,7 @@ const HistoryDetailContainer = () => {
     if (!detail) return;
     setSubmitting(true);
     try {
-      await axios.patch(`/api/purchases/reapply`, {
+      await purchaseApi.patch(`/purchases/reapply`, {
         actorType: 'MEMBER',
         purchaseId: detail.purchaseId,
         userId,

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 
 import { PurchaseHistoryItem } from '../type/purchase';
 import { isInProgress } from '../constant/purchase';
+import { purchaseApi } from '../utils/api';
 import { getUserId } from '../utils/user';
 
 import Home from '../components/Home/Home';
@@ -16,7 +16,9 @@ const HomeContainer = () => {
 
     const fetchHistory = async () => {
       try {
-        const res = await axios.get<PurchaseHistoryItem[]>(`/api/purchases/product/user/${userId}`);
+        const res = await purchaseApi.get<PurchaseHistoryItem[]>(
+          `/purchases/product/user/${userId}`
+        );
         const inProgressIds = new Set(
           res.data.filter((item) => isInProgress(item.status)).map((item) => item.purchaseId)
         );

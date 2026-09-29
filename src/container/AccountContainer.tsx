@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
 
 import { PurchaseDetailData } from '../type/purchase';
 import { getPurchaseStatusView } from '../constant/purchase';
+import { purchaseApi } from '../utils/api';
 import { getUserId } from '../utils/user';
 import { getErrorMessage } from '../utils/format';
 import useToast from '../hooks/useToast';
@@ -22,7 +22,7 @@ const AccountContainer = () => {
   useEffect(() => {
     const fetchDetail = async () => {
       try {
-        const res = await axios.get<PurchaseDetailData>(`/api/purchases/${purchaseId}`);
+        const res = await purchaseApi.get<PurchaseDetailData>(`/purchases/${purchaseId}`);
         if (!userId || res.data.userId !== userId) throw new Error('not owner');
         // 계좌 입력(= 판매 확정)이 가능한 상태인지 확인
         const { actions } = getPurchaseStatusView(res.data.status, res.data.purchaseType);
@@ -50,7 +50,7 @@ const AccountContainer = () => {
     if (!detail || submitting) return;
     setSubmitting(true);
     try {
-      await axios.post(`/api/purchases/account`, {
+      await purchaseApi.post(`/purchases/account`, {
         purchaseId: detail.purchaseId,
         bankCode: form.bankCode,
         holder: form.holder.trim(),

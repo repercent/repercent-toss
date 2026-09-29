@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 
 import { PurchaseSelectState } from '../type/purchase';
+import { purchaseApi } from '../utils/api';
 
 import StepComponent from '../components/Step/StepComponent';
 
@@ -22,7 +22,7 @@ const StepContainer = () => {
   });
 
   const fetchData = async (params: Record<string, string>) => {
-    const res = await axios.get(`/api/grades/products`, { params });
+    const res = await purchaseApi.get(`/grades/products`, { params });
     return res.data?.[0];
   };
 

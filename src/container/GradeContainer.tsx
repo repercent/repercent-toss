@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
 
 import { PurchaseGrade, PurchaseSelectState } from '../type/purchase';
+import { purchaseApi } from '../utils/api';
 import GradeComponent from '../components/Grade/GradeComponent';
 
 const GradeContainer = () => {
@@ -20,7 +20,7 @@ const GradeContainer = () => {
 
     const fetchGradeDetail = async () => {
       try {
-        const res = await axios.get(`/api/grades/product/detail`, {
+        const res = await purchaseApi.get(`/grades/product/detail`, {
           params: {
             category: state.category,
             subcategory: state.subcategory,

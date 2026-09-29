@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
 
 import { PurchaseDetailData } from '../type/purchase';
 import {
@@ -9,6 +8,7 @@ import {
   getPurchaseStatusView,
   PURCHASE_STATUS,
 } from '../constant/purchase';
+import { purchaseApi } from '../utils/api';
 import { getUserId } from '../utils/user';
 import { getErrorMessage } from '../utils/format';
 import useToast from '../hooks/useToast';
@@ -27,7 +27,7 @@ const CancelContainer = () => {
   useEffect(() => {
     const fetchDetail = async () => {
       try {
-        const res = await axios.get<PurchaseDetailData>(`/api/purchases/${purchaseId}`);
+        const res = await purchaseApi.get<PurchaseDetailData>(`/purchases/${purchaseId}`);
         if (!userId || res.data.userId !== userId) throw new Error('not owner');
         const { actions } = getPurchaseStatusView(res.data.status, res.data.purchaseType);
         if (!actions.includes('CANCEL_PURCHASE') && !actions.includes('CANCEL_SALE')) {
@@ -54,7 +54,7 @@ const CancelContainer = () => {
     if (!detail || submitting) return;
     setSubmitting(true);
     try {
-      await axios.patch(`/api/purchases/cancel/${detail.purchaseId}`, {
+      await purchaseApi.patch(`/purchases/cancel/${detail.purchaseId}`, {
         actorType: 'MEMBER',
         purchaseId: detail.purchaseId,
         userId,
