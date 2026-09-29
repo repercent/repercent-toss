@@ -7,8 +7,9 @@ export default defineConfig({
   plugins: [aitDevtools.vite(), react()],
   server: {
     proxy: {
+      // 로컬 개발은 dev 서버 (토스 로그인도 dev auth 서버를 써서 회원 ID가 같은 환경이어야 함)
       '/api': {
-        target: 'https://purchase.repercent.com',
+        target: 'https://dev-common-api-purchase.repercent.com',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
