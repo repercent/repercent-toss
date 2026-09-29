@@ -4,16 +4,20 @@ import styled from 'styled-components';
 
 import { PurchaseSelectState, ShippingInfo } from '../../type/purchase';
 
-import DaumPost from '../Common/DaumPost';
+import AddressSearch from './AddressSearch';
 import BottomCTA, { BOTTOM_CTA_SPACE } from '../Common/BottomCTA';
 import CTAButton from '../Common/Button/CTAButton';
 import { Field, FieldButton, FieldInput } from '../Common/Field';
 
+/** 주소 검색은 해시로 열어 기기 뒤로가기로 닫히게 함 */
+const SEARCH_HASH = '#address-search';
+
 const Address = () => {
   const navigate = useNavigate();
-  const { state } = useLocation() as { state: PurchaseSelectState };
+  const location = useLocation();
+  const state = location.state as PurchaseSelectState;
+  const isSearchOpen = location.hash === SEARCH_HASH;
 
-  const [openAddr, setOpenAddr] = useState(false);
   const [shippingInfo, setShippingInfo] = useState<ShippingInfo>({
     name: '',
     phone: '',
@@ -26,6 +30,20 @@ const Address = () => {
     setShippingInfo((prev) => ({ ...prev, [key]: e.target.value }));
 
   const isDisabled = Object.values(shippingInfo).some((value) => value.trim() === '');
+
+  const openSearch = () => navigate({ hash: SEARCH_HASH }, { state });
+
+  const closeSearch = () => {
+    if ((window.history.state?.idx ?? 0) > 0) navigate(-1);
+    else navigate({ hash: '' }, { replace: true, state });
+  };
+
+  const handleSelectAddress = ({ zipcode, address }: { zipcode: string; address: string }) => {
+    setShippingInfo((prev) => ({ ...prev, zipcode, address1: address }));
+    closeSearch();
+    // 검색 화면이 닫힌 뒤 상세 주소 입력으로 포커스 이동
+    setTimeout(() => document.getElementById('address2')?.focus(), 100);
+  };
 
   const handleApply = () => {
     navigate('/agreement', {
@@ -54,13 +72,14 @@ const Address = () => {
           <FieldButton
             icon="/ico/ico_search.svg"
             placeholder={!shippingInfo.zipcode}
-            onClick={() => setOpenAddr(true)}
+            onClick={openSearch}
           >
             {shippingInfo.zipcode
               ? `[${shippingInfo.zipcode}] ${shippingInfo.address1}`
               : '우편번호 찾기'}
           </FieldButton>
           <FieldInput
+            id="address2"
             name="address2"
             value={shippingInfo.address2}
             placeholder="상세 주소를 입력해 주세요"
@@ -89,18 +108,7 @@ const Address = () => {
         </CTAButton>
       </BottomCTA>
 
-      {openAddr && (
-        <DaumPost
-          onClose={() => setOpenAddr(false)}
-          onComplete={({ zonecode, address }) =>
-            setShippingInfo((prev) => ({
-              ...prev,
-              zipcode: zonecode,
-              address1: address,
-            }))
-          }
-        />
-      )}
+      {isSearchOpen && <AddressSearch onSelect={handleSelectAddress} onClose={closeSearch} />}
     </AddressBase>
   );
 };

@@ -1,6 +1,12 @@
 /// <reference types="vite/client" />
 
-declare module "*.css" {
+interface ImportMetaEnv {
+  readonly VITE_IMAGE_URL?: string;
+  readonly VITE_DEV_USER_ID?: string;
+  readonly VITE_JUSO_API_KEY?: string;
+}
+
+declare module '*.css' {
   const content: Record<string, string>;
   export default content;
 }
