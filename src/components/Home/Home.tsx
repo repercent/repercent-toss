@@ -1,184 +1,196 @@
 import { useNavigate } from 'react-router-dom';
-
 import styled from 'styled-components';
-import H1 from '../Common/Title/H1';
-import H4 from '../Common/Title/H4';
-import HomeInfo from './HomeInfo';
-import Button from '../Common/Button/Button';
 
-const Home = () => {
+interface HomeProps {
+  inProgressCount: number;
+}
+
+const INFO_CARDS = [
+  { icon: '/ico/ico_home_grade.svg', label: '투명한\n등급 시세' },
+  { icon: '/ico/ico_home_time.svg', label: '30초면\n신청 완료' },
+  { icon: '/ico/ico_home_deposit.svg', label: '검수 후\n빠른 입금' },
+];
+
+const Home = ({ inProgressCount }: HomeProps) => {
   const navigate = useNavigate();
+
   return (
     <HomeBase>
-      {/* title */}
-      <PurchaseTitle>
-        <H1>
-          같은 제품이어도<br></br>
-          <strong>3,000원 </strong>더 받아가세요
-        </H1>
-      </PurchaseTitle>
+      <Header>
+        <Title>
+          내 폰, <strong>최고가</strong>에 팔아보세요
+        </Title>
+        <SubTitle>30초 만에 시세 확인부터 수거 신청까지</SubTitle>
+      </Header>
 
-      {/* product */}
-      <PurchaseProductBox>
-        <PurchaseWrapper>
-          <ProductInfoBox>
-            <ProductInfo>
-              <H4>아이폰 13</H4>
-              <ProductSeries>256GB A급</ProductSeries>
-            </ProductInfo>
-          </ProductInfoBox>
-        </PurchaseWrapper>
+      <HeroImage>
+        <img src="/img/home/money.png" alt="" width={219} height={155} />
+      </HeroImage>
 
-        {/* price */}
-        <PriceWrapper>
-          <PriceBox>
-            <AnotherCompany>A사</AnotherCompany>
-            <AnotherPrice>2,500원</AnotherPrice>
-          </PriceBox>
-          <PriceBox>
-            <AnotherCompany>B사</AnotherCompany>
-            <AnotherPrice>6,000원</AnotherPrice>
-          </PriceBox>
-          <PriceBox>
-            <CompanyName>리퍼센트</CompanyName>
-            <Price>3,000원</Price>
-          </PriceBox>
-        </PriceWrapper>
-      </PurchaseProductBox>
+      <InfoSection>
+        <ActionSection>
+          <PrimaryAction type="button" onClick={() => navigate('/step')}>
+            수거 신청하기
+            <img src="/ico/ico_chevron_white.svg" alt="" width={20} height={20} />
+          </PrimaryAction>
+          <SecondaryAction type="button" onClick={() => navigate('/service')}>
+            서비스 알아보기
+            <img src="/ico/ico_chevron_gray.svg" alt="" width={22} height={22} />
+          </SecondaryAction>
+        </ActionSection>
 
-      {/* info */}
-      <HomeInfo />
+        <InfoCards>
+          {INFO_CARDS.map(({ icon, label }) => (
+            <InfoCard key={label}>
+              <img src={icon} alt="" width={24} height={24} />
+              <InfoLabel>{label}</InfoLabel>
+            </InfoCard>
+          ))}
+        </InfoCards>
 
-      <ButtonBtn>
-        <Button onClick={() => navigate('/step')}>수거 신청하기</Button>
-      </ButtonBtn>
+        <SaleCard type="button" onClick={() => navigate('/history')}>
+          <SaleInfo>
+            <SaleTitle>판매 내역</SaleTitle>
+            <SaleCount>진행 중인 판매 {inProgressCount}건</SaleCount>
+          </SaleInfo>
+          <img src="/ico/ico_chevron_gray.svg" alt="" width={22} height={22} />
+        </SaleCard>
+      </InfoSection>
     </HomeBase>
   );
 };
 export default Home;
 
 const HomeBase = styled.main`
-  position: relative;
-  height: calc(var(--vh, 1vh) * 100);
-
   display: flex;
   flex-direction: column;
-  gap: 28px;
-
-  padding: 32px 16px;
-
-  overflow-y: scroll;
+  padding: 32px 24px;
 `;
 
-const PurchaseTitle = styled.div`
+const Header = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+`;
+
+const Title = styled.h1`
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 35px;
+  letter-spacing: -0.8px;
+  color: #191f28;
+
   & strong {
     color: ${({ theme }) => theme.primary[700]};
   }
 `;
 
-const PurchaseInfoImg = styled.div`
-  position: relative;
+const SubTitle = styled.p`
+  font-size: 15px;
+  line-height: 22.5px;
+  color: #8b95a1;
+`;
+
+const HeroImage = styled.div`
+  height: 200px;
   display: flex;
   align-items: center;
   justify-content: center;
 `;
 
-const PurchaseProductBox = styled.div`
-  border: 1px solid ${({ theme }) => theme.gray[200]};
-  border-radius: 8px;
+const InfoSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 `;
 
-const PurchaseWrapper = styled.div`
+const ActionSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+const PrimaryAction = styled.button`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 16px;
+  padding: 22px;
+  border-radius: 20px;
+  background: linear-gradient(90deg, #3182f6 0%, #2779ef 100%);
+  box-shadow: 0 0 12px rgba(49, 130, 246, 0.16);
+
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 21px;
+  color: #fff;
 `;
 
-const ProductInfoBox = styled.div`
-  display: flex;
-  gap: 12px;
-  flex: 1;
-`;
-
-const ProductImg = styled.div`
-  position: relative;
-  width: 25%;
-  aspect-ratio: 1 / 1;
-`;
-
-const ProductInfo = styled.div`
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-`;
-
-const ProductSeries = styled.p`
-  color: ${({ theme }) => theme.gray[600]};
-`;
-
-const ChangeBtn = styled.button`
-  background: ${({ theme }) => theme.gray[600]};
-  display: flex;
-  gap: 4px;
-  padding: 7px 12px 8px 12px;
-  justify-content: center;
-  align-items: center;
-  border-radius: 8px;
-`;
-
-const PriceWrapper = styled(PurchaseWrapper)`
-  justify-content: space-around;
-  border-top: 1px solid ${({ theme }) => theme.gray[100]};
-`;
-
-const PriceBox = styled.div`
+const SecondaryAction = styled.button`
   display: flex;
   align-items: center;
-  flex-direction: column;
-  gap: 4px;
-`;
-
-const CompanyName = styled.span`
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: -0.14px;
-  color: ${({ theme }) => theme.gray[700]};
-`;
-
-const Price = styled.span`
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: -0.16px;
-  color: ${({ theme }) => theme.primary[700]};
-`;
-
-const AnotherCompany = styled(CompanyName)`
-  color: ${({ theme }) => theme.gray[400]};
-`;
-
-const AnotherPrice = styled(Price)`
-  font-weight: 400;
-
-  color: ${({ theme }) => theme.gray[400]};
-`;
-
-const ButtonBtn = styled.div`
+  justify-content: space-between;
+  padding: 20px;
+  border: 1px solid #e5e8eb;
+  border-radius: 20px;
   background-color: #fff;
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
 
-  max-width: 720px;
-  min-width: 280px;
-  width: 100%;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 20px;
+  color: #191f28;
+`;
 
+const InfoCards = styled.ul`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+`;
+
+const InfoCard = styled.li`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  padding: 12px 0;
+  border-radius: 16px;
+  background-color: #f7f8fa;
+`;
+
+const InfoLabel = styled.p`
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+  color: #4e5968;
+  text-align: center;
+  white-space: pre-line;
+`;
+
+const SaleCard = styled.button`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 20px;
+  border: 1px solid #f2f4f6;
+  border-radius: 20px;
+  background-color: #fff;
+  text-align: left;
+`;
 
-  padding: 16px;
-  gap: 16px;
+const SaleInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+`;
+
+const SaleTitle = styled.span`
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 20px;
+  color: #191f28;
+`;
+
+const SaleCount = styled.span`
+  font-size: 13px;
+  line-height: 15px;
+  color: #8b95a1;
 `;

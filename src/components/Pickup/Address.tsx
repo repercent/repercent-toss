@@ -1,75 +1,93 @@
 import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { ShippingInfo } from '../../type/purchase';
+import { PurchaseSelectState, ShippingInfo } from '../../type/purchase';
 
-import H2 from '../Common/Title/H2';
-import H5 from '../Common/Title/H5';
-import Input from '../Common/Input';
-import Button from '../Common/Button/Button';
 import DaumPost from '../Common/DaumPost';
+import BottomCTA, { BOTTOM_CTA_SPACE } from '../Common/BottomCTA';
+import CTAButton from '../Common/Button/CTAButton';
+import { Field, FieldButton, FieldInput } from '../Common/Field';
 
-export interface AddressProps {
-  shippingInfo: ShippingInfo;
-  setShippingInfo: React.Dispatch<React.SetStateAction<ShippingInfo>>;
-  handleApply: () => void;
-  isDisabled: boolean;
-}
+const Address = () => {
+  const navigate = useNavigate();
+  const { state } = useLocation() as { state: PurchaseSelectState };
 
-const Address = ({ shippingInfo, setShippingInfo, handleApply, isDisabled }: AddressProps) => {
   const [openAddr, setOpenAddr] = useState(false);
+  const [shippingInfo, setShippingInfo] = useState<ShippingInfo>({
+    name: '',
+    phone: '',
+    zipcode: '',
+    address1: '',
+    address2: '',
+  });
+
+  const update = (key: keyof ShippingInfo) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setShippingInfo((prev) => ({ ...prev, [key]: e.target.value }));
+
+  const isDisabled = Object.values(shippingInfo).some((value) => value.trim() === '');
+
+  const handleApply = () => {
+    navigate('/agreement', {
+      state: {
+        ...state,
+        ...shippingInfo,
+      },
+    });
+  };
 
   return (
     <AddressBase>
-      <H2>기본 정보를 입력해 주세요</H2>
-      <InputBox>
-        <H5>주소</H5>
-        {shippingInfo.zipcode === '' ? (
-          <AddressSearchBox onClick={() => setOpenAddr(true)}>
-            <img src={'/ico/ico_search.svg'} alt="검색 아이콘" width={18} height={18} />
-            우편번호 찾기
-          </AddressSearchBox>
-        ) : (
-          <>
-            <AddressBox onClick={() => setOpenAddr(true)}>
-              <Postcode>{`[${shippingInfo.zipcode}]`}</Postcode>
-              <AddressDes>{shippingInfo.address1}</AddressDes>
-            </AddressBox>
-            <Input
-              type="text"
-              name="address2"
-              value={shippingInfo.address2}
-              placeholder="상세주소를 입력해 주세요"
-              onChange={(e) => setShippingInfo((prev) => ({ ...prev, address2: e.target.value }))}
-            />
-          </>
-        )}
-      </InputBox>
-      <InputBox>
-        <H5>이름</H5>
-        <Input
-          name="name"
-          value={shippingInfo.name}
-          placeholder="이름을 입력해 주세요"
-          onChange={(e) => setShippingInfo((prev) => ({ ...prev, name: e.target.value }))}
-        />
-      </InputBox>
-      <InputBox>
-        <H5>연락처</H5>
-        <Input
-          type="tel"
-          name="phone"
-          value={shippingInfo.phone}
-          placeholder="휴대폰 번호를 입력해 주세요"
-          onChange={(e) => setShippingInfo((prev) => ({ ...prev, phone: e.target.value }))}
-        />
-      </InputBox>
+      <Title>기본 정보를 입력해 주세요</Title>
 
-      <BottomButton>
-        <Button disabled={isDisabled} onClick={handleApply}>
-          확인
-        </Button>
-      </BottomButton>
+      <Fields>
+        <Field label="이름">
+          <FieldInput
+            name="name"
+            value={shippingInfo.name}
+            placeholder="이름을 입력해주세요"
+            onChange={update('name')}
+          />
+        </Field>
+
+        <Field label="주소">
+          <FieldButton
+            icon="/ico/ico_search.svg"
+            placeholder={!shippingInfo.zipcode}
+            onClick={() => setOpenAddr(true)}
+          >
+            {shippingInfo.zipcode
+              ? `[${shippingInfo.zipcode}] ${shippingInfo.address1}`
+              : '우편번호 찾기'}
+          </FieldButton>
+          <FieldInput
+            name="address2"
+            value={shippingInfo.address2}
+            placeholder="상세 주소를 입력해 주세요"
+            onChange={update('address2')}
+          />
+        </Field>
+
+        <Field label="연락처">
+          <FieldInput
+            type="tel"
+            inputMode="numeric"
+            name="phone"
+            maxLength={11}
+            value={shippingInfo.phone}
+            placeholder="연락처를 입력해 주세요"
+            onChange={(e) =>
+              setShippingInfo((prev) => ({ ...prev, phone: e.target.value.replace(/\D/g, '') }))
+            }
+          />
+        </Field>
+      </Fields>
+
+      <BottomCTA>
+        <CTAButton disabled={isDisabled} onClick={handleApply}>
+          수거 신청하기
+        </CTAButton>
+      </BottomCTA>
 
       {openAddr && (
         <DaumPost
@@ -91,89 +109,20 @@ export default Address;
 const AddressBase = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 36px;
-  padding: 16px 16px 120px;
+  gap: 20px;
+  padding: 24px 0 ${BOTTOM_CTA_SPACE}px;
 `;
 
-const InputBox = styled.div`
+const Title = styled.h2`
+  padding: 0 24px;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 28px;
+  letter-spacing: -0.44px;
+  color: #202938;
+`;
+
+const Fields = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 12px;
-`;
-
-const AddressBox = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  width: 100%;
-  height: 52px;
-  padding: 0 16px;
-  border: 1px solid ${({ theme }) => theme.gray[200]};
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 400;
-  cursor: pointer;
-`;
-
-const AddressSearchBox = styled(AddressBox)`
-  color: ${({ theme }) => theme.gray[400]};
-`;
-
-const RecentlyBox = styled.div`
-  color: ${({ theme }) => theme.gray[500]};
-`;
-
-const CheckIcon = styled.span<{ $checked: boolean }>`
-  background-size: cover;
-  width: 16px;
-  height: 16px;
-  display: inline-block;
-  ${({ $checked }) =>
-    $checked
-      ? `background-image: url("/ico/ico_check_checked.svg");`
-      : `background-image: url("/ico/ico_check_default.svg");`}
-`;
-
-const CheckboxLabel = styled.label`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 27px;
-  letter-spacing: -0.18px;
-  cursor: pointer;
-`;
-
-const CheckboxInput = styled.input`
-  display: none;
-`;
-
-const RecentlyAddress = styled.p`
-  padding-left: 24px;
-`;
-
-const Postcode = styled.span`
-  margin-right: 4px;
-`;
-
-const AddressDes = styled.p``;
-
-const BottomButton = styled.div`
-  background-color: #fff;
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-
-  max-width: 720px;
-  min-width: 280px;
-  width: 100%;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  padding: 16px;
-  gap: 16px;
 `;

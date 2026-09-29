@@ -16,8 +16,8 @@ const DaumPost = ({ onClose, onComplete }: DaumPostProps) => {
   };
 
   return (
-    <ModalBase>
-      <ModalInner>
+    <ModalBase onClick={onClose}>
+      <ModalInner onClick={(e) => e.stopPropagation()}>
         <PostBox>
           <DaumPostcodeEmbed
             style={{ height: '75vh', maxHeight: '600px' }}
