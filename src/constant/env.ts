@@ -7,6 +7,11 @@ export const PURCHASE_API_URL: string =
   import.meta.env.VITE_PURCHASE_API_URL ??
   (import.meta.env.DEV ? '/api' : 'https://purchase.repercent.com');
 
+/** 리퍼센트 auth 서버 주소 (토스 로그인). 로컬 개발은 dev 서버, 빌드는 운영 서버가 기본값이에요. */
+export const AUTH_API_URL: string =
+  import.meta.env.VITE_AUTH_API_URL ??
+  (import.meta.env.DEV ? 'https://dev-auth.repercent.com' : 'https://auth.repercent.com');
+
 /** 상품 이미지 CDN (.env 미설정 시 운영 CDN 사용) */
 export const IMAGE_URL: string = import.meta.env.VITE_IMAGE_URL ?? 'https://image.21market.kr';
 

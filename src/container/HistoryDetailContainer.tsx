@@ -6,13 +6,14 @@ import { PurchaseDetailData } from '../type/purchase';
 import { getPurchaseStatusView, PurchaseAction, PURCHASE_STATUS } from '../constant/purchase';
 import { CS_URL, getTrackingUrl } from '../constant/env';
 import { purchaseApi } from '../utils/api';
-import { getUserId } from '../utils/user';
 import { getErrorMessage } from '../utils/format';
 import { openExternalURL } from '../utils/toss';
 import useToast from '../hooks/useToast';
+import useAuth from '../hooks/useAuth';
 
 import HistoryDetailComponent from '../components/History/HistoryDetailComponent';
 import Dialog from '../components/Common/Dialog';
+import LoginRequired from '../components/Common/LoginRequired';
 
 type DialogType = 'CANCEL' | 'CONFIRM_SALE' | 'REQUEST_PICKUP';
 
@@ -44,7 +45,7 @@ const HistoryDetailContainer = () => {
   const navigate = useNavigate();
   const { purchaseId } = useParams();
   const showToast = useToast();
-  const userId = getUserId();
+  const { status, userId } = useAuth();
 
   const [detail, setDetail] = useState<PurchaseDetailData | null>(null);
   const [message, setMessage] = useState('');
@@ -65,12 +66,9 @@ const HistoryDetailContainer = () => {
   }, [purchaseId, userId]);
 
   useEffect(() => {
-    if (!userId) {
-      setMessage('로그인 후 판매 내역을 확인할 수 있어요');
-      return;
-    }
+    if (status !== 'member') return;
     fetchDetail();
-  }, [userId, fetchDetail]);
+  }, [status, fetchDetail]);
 
   const handleAction = (action: PurchaseAction) => {
     switch (action) {
@@ -127,6 +125,7 @@ const HistoryDetailContainer = () => {
     if (dialog === 'REQUEST_PICKUP') requestPickup();
   };
 
+  if (status === 'guest') return <LoginRequired />;
   if (message) return <Message>{message}</Message>;
   if (!detail) return null;
 

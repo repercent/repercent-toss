@@ -4,9 +4,9 @@ import styled from 'styled-components';
 
 import { PurchaseApplyState } from '../../type/purchase';
 import { purchaseApi } from '../../utils/api';
-import { getUserId } from '../../utils/user';
 import { getErrorMessage } from '../../utils/format';
 import useToast from '../../hooks/useToast';
+import useAuth from '../../hooks/useAuth';
 
 import BottomCTA, { BOTTOM_CTA_SPACE } from '../Common/BottomCTA';
 import CTAButton from '../Common/Button/CTAButton';
@@ -44,6 +44,7 @@ const AgreementComponent = () => {
   const navigate = useNavigate();
   const { state } = useLocation() as { state: PurchaseApplyState | null };
   const showToast = useToast();
+  const { login } = useAuth();
 
   const [isAgree, setIsAgree] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -57,9 +58,12 @@ const AgreementComponent = () => {
       return;
     }
 
-    const userId = getUserId();
+    setSubmitting(true);
+
+    // 신청 버튼을 눌렀을 때 토스 로그인 (이미 로그인돼 있으면 화면 없이 바로 진행)
+    const userId = await login();
     if (!userId) {
-      showToast('로그인 정보를 확인할 수 없어요\n잠시 후 다시 시도해 주세요');
+      setSubmitting(false);
       return;
     }
 
@@ -69,7 +73,6 @@ const AgreementComponent = () => {
       subcategory: state.customModel ? state.customModel : state.subcategory,
     };
 
-    setSubmitting(true);
     try {
       const res = await purchaseApi.post<number>(`/purchases/product`, body);
       navigate('/complete', { replace: true, state: { purchaseId: res.data } });

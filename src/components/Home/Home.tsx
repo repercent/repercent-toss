@@ -2,7 +2,9 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 interface HomeProps {
-  inProgressCount: number;
+  /** 판매 내역 카드 보조 문구 (진행 중인 판매 건수 또는 로그인 안내) */
+  saleSummary: string;
+  onOpenHistory: () => void;
 }
 
 const INFO_CARDS = [
@@ -11,7 +13,7 @@ const INFO_CARDS = [
   { icon: '/ico/ico_home_deposit.svg', label: '검수 후\n빠른 입금' },
 ];
 
-const Home = ({ inProgressCount }: HomeProps) => {
+const Home = ({ saleSummary, onOpenHistory }: HomeProps) => {
   const navigate = useNavigate();
 
   return (
@@ -48,10 +50,10 @@ const Home = ({ inProgressCount }: HomeProps) => {
           ))}
         </InfoCards>
 
-        <SaleCard type="button" onClick={() => navigate('/history')}>
+        <SaleCard type="button" onClick={onOpenHistory}>
           <SaleInfo>
             <SaleTitle>판매 내역</SaleTitle>
-            <SaleCount>진행 중인 판매 {inProgressCount}건</SaleCount>
+            <SaleCount>{saleSummary}</SaleCount>
           </SaleInfo>
           <img src="/ico/ico_chevron_gray.svg" alt="" width={22} height={22} />
         </SaleCard>

@@ -6,16 +6,21 @@ import { PURCHASE_STATUS_LABEL } from '../../constant/purchase';
 import { IMAGE_URL } from '../../constant/env';
 import { formatPrice, getProductName } from '../../utils/format';
 
+import LoginRequired from '../Common/LoginRequired';
+
 interface HistoryProps {
   items: PurchaseHistoryItem[] | null;
-  /** 안내 문구 (로그인 필요, 조회 실패 등). 있으면 목록 대신 노출 */
+  /** 로그인 전이면 로그인 안내를 노출 */
+  loginRequired?: boolean;
+  /** 조회 실패 등 안내 문구. 있으면 목록 대신 노출 */
   message?: string;
 }
 
-const HistoryComponent = ({ items, message }: HistoryProps) => {
+const HistoryComponent = ({ items, loginRequired, message }: HistoryProps) => {
   const navigate = useNavigate();
 
   const renderBody = () => {
+    if (loginRequired) return <LoginRequired />;
     if (message) return <Empty>{message}</Empty>;
     if (!items) return null;
     if (items.length === 0) {

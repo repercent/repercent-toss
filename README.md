@@ -19,7 +19,7 @@ npm run dev
 | `VITE_JUSO_API_KEY`     | O    | 도로명주소 검색 API 승인키. [주소기반산업지원서비스](https://business.juso.go.kr)에서 검색 API를 신청해 발급받아요. 없으면 주소 검색에서 안내 문구만 보여요.                                                 |
 | `VITE_PURCHASE_API_URL` |      | 매입 API 주소. 기본값은 로컬 개발 `/api`(Vite 프록시 → dev 서버), 빌드 `https://purchase.repercent.com`. 개발 서버로 QR 테스트할 땐 `https://dev-common-api-purchase.repercent.com`처럼 HTTPS 주소를 넣어요. |
 | `VITE_IMAGE_URL`        |      | 상품 이미지 CDN. 기본값 `https://image.21market.kr`                                                                                                                                                          |
-| `VITE_DEV_USER_ID`      |      | 로컬 개발용 리퍼센트 회원 ID. 토스 로그인 연동 전 판매 내역 화면 확인용이에요.                                                                                                                               |
+| `VITE_AUTH_API_URL`     |      | 토스 로그인 auth 서버 주소. 기본값은 로컬 개발 `https://dev-auth.repercent.com`, 빌드 `https://auth.repercent.com`.                                                                                          |
 
 ## 배포하기
 
