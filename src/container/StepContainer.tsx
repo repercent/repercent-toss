@@ -21,6 +21,16 @@ const StepContainer = () => {
     storages: [],
   });
 
+  /**
+   * 옵션 목록 정규화.
+   * 운영 API는 ['A,B,C'] 한 문자열, 개발 API는 ['A', 'B', 'C']로 내려와서 둘 다 처리한다.
+   */
+  const toOptions = (values?: string[]) =>
+    (values ?? [])
+      .flatMap((value) => value.split(','))
+      .map((value) => value.trim())
+      .filter(Boolean);
+
   const fetchData = async (params: Record<string, string>) => {
     const res = await purchaseApi.get(`/grades/products`, { params });
     return res.data?.[0];
@@ -37,7 +47,7 @@ const StepContainer = () => {
 
     const data = await fetchData({ category });
     setOptions({
-      subcategories: data?.subcategory?.[0]?.split(',') ?? [],
+      subcategories: toOptions(data?.subcategory),
       models: [],
       storages: [],
     });
@@ -50,7 +60,7 @@ const StepContainer = () => {
     const data = await fetchData({ category: select.category!, subcategory });
     setOptions((prev) => ({
       ...prev,
-      models: data?.model?.[0]?.split(',') ?? [],
+      models: toOptions(data?.model),
       storages: [],
     }));
   };
@@ -66,7 +76,7 @@ const StepContainer = () => {
     });
     setOptions((prev) => ({
       ...prev,
-      storages: data?.storage?.[0]?.split(',') ?? [],
+      storages: toOptions(data?.storage),
     }));
   };
 
