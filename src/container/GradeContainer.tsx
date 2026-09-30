@@ -63,6 +63,8 @@ const GradeContainer = () => {
         navigate('/pickup', {
           state: {
             ...state,
+            // 웹과 같이 등급 이미지를 신청 본문에 담는다. 없으면 판매 내역에 상품 사진이 비어 나온다.
+            image: gradeDetail[0]?.image,
           },
         });
       }}

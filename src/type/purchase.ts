@@ -15,6 +15,8 @@ export type PurchaseSelectState = {
   model?: string;
   storage?: string;
   customModel?: string;
+  /** 예상 시세 단계에서 채워져 매입 신청 본문으로 함께 전송된다 (서버가 상품 이미지로 저장). */
+  image?: string;
 };
 
 export interface PurchaseGradeProps {
