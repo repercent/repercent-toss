@@ -154,9 +154,7 @@ const ServiceComponent = () => {
                 <span>
                   {review.grade} <strong>{review.model}</strong> {review.storage} {review.color}
                 </span>
-                <span>
-                  {review.author} {review.date}
-                </span>
+                <span>{review.author}</span>
               </ReviewMeta>
             </ReviewCard>
           ))}
@@ -610,6 +608,10 @@ const ReviewMeta = styled.div`
 
   & strong {
     font-weight: 700;
+  }
+
+  & span:last-child {
+    flex-shrink: 0;
   }
 `;
 
