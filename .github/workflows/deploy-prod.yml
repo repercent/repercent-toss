@@ -1,0 +1,139 @@
+name: Deploy to Apps in Toss (Prod)
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# 번들이 동시에 올라가지 않도록 차례로 실행한다.
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
+env:
+  APP_ENV: prod
+  # 빌드 시점에 번들에 들어가는 API 주소
+  VITE_PURCHASE_API_URL: https://purchase.repercent.com
+  VITE_AUTH_API_URL: https://auth.repercent.com
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # GitHub Environment 'prod'의 secret을 읽는다.
+    #   AIT_API_KEY        앱인토스 콘솔 API 키 (워크스페이스 > 키)
+    #   VITE_JUSO_API_KEY  도로명주소 검색 API 승인키. 빌드 시점에 번들에 들어간다.
+    #   SLACK_WEBHOOK_URL  (선택) 배포 결과 알림
+    environment: prod
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check deploy configuration
+        env:
+          AIT_API_KEY: ${{ secrets.AIT_API_KEY }}
+          VITE_JUSO_API_KEY: ${{ secrets.VITE_JUSO_API_KEY }}
+        run: |
+          if [ -z "$AIT_API_KEY" ] || [ -z "$VITE_JUSO_API_KEY" ]; then
+            echo "::error::GitHub Environment 'prod'에 AIT_API_KEY, VITE_JUSO_API_KEY secret을 설정해야 합니다. (README 배포하기 참고)"
+            exit 1
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build (prod)
+        env:
+          VITE_JUSO_API_KEY: ${{ secrets.VITE_JUSO_API_KEY }}
+        run: npm run build
+
+      # 콘솔에 출시 후보 번들로 올라간다. 출시는 콘솔에서 이 번들로 검토를 요청하고 승인 후 '출시하기'를 눌러야 한다.
+      - name: Upload bundle
+        id: deploy
+        env:
+          AIT_API_KEY: ${{ secrets.AIT_API_KEY }}
+        run: |
+          set -o pipefail
+          npx ait deploy --api-key "$AIT_API_KEY" --scheme-only -m "$APP_ENV ${GITHUB_SHA::7}" | tee deploy.log
+          SCHEME=$(grep -o 'intoss-private://[^[:space:]]*' deploy.log | tail -1)
+          if [ -z "$SCHEME" ]; then
+            echo "::error::업로드 결과에서 테스트 스킴을 찾지 못했습니다."
+            exit 1
+          fi
+          echo "scheme=$SCHEME" >> "$GITHUB_OUTPUT"
+
+      - name: Deployment summary
+        env:
+          SCHEME: ${{ steps.deploy.outputs.scheme }}
+        run: |
+          {
+            echo "### 앱인토스 번들 업로드 완료 ($APP_ENV)"
+            echo ""
+            echo "- **테스트 스킴**: \`$SCHEME\`"
+            echo "- **API**: $VITE_PURCHASE_API_URL, $VITE_AUTH_API_URL"
+            echo "- **Commit**: $GITHUB_SHA"
+            echo ""
+            echo "콘솔 '테스트하기'의 QR이나 위 스킴을 토스 앱에서 열어 확인한 뒤, 콘솔에서 이 번들(메모 \`$APP_ENV ${GITHUB_SHA::7}\`)로 검토를 요청해요."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Check Slack webhook configuration
+        id: slack-webhook
+        if: always()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          if [ -n "$SLACK_WEBHOOK_URL" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::SLACK_WEBHOOK_URL is not configured"
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Notify Slack - failure
+        if: ${{ failure() && steps.slack-webhook.outputs.configured == 'true' }}
+        uses: slackapi/slack-github-action@v4.0.0
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "🚨 배포 실패: repercent-toss (${{ env.APP_ENV }})",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "🚨 *배포 실패* — repercent-toss 앱인토스 번들 (`${{ env.APP_ENV }}`)\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|워크플로우 로그 보기>"
+                  }
+                }
+              ]
+            }
+
+      - name: Notify Slack - success
+        if: ${{ success() && steps.slack-webhook.outputs.configured == 'true' }}
+        uses: slackapi/slack-github-action@v4.0.0
+        with:
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "text": "✅ 출시 후보 번들 업로드: repercent-toss (${{ env.APP_ENV }})",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "✅ *출시 후보 번들 업로드* — repercent-toss 앱인토스 (`${{ env.APP_ENV }}`)\n• 테스트 스킴: `${{ steps.deploy.outputs.scheme }}`\n• 커밋: <${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }}> by ${{ github.actor }}\nQR 테스트 후 콘솔에서 이 번들로 검토를 요청해요. 머지만으로는 출시되지 않아요."
+                  }
+                }
+              ]
+            }
