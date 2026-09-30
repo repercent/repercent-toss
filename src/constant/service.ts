@@ -1,14 +1,3 @@
-export const PRICE_COMPARISON = {
-  product: '갤럭시 S22 울트라',
-  spec: '256GB A급',
-  extra: 34000,
-  prices: [
-    { company: 'A사', price: 354000 },
-    { company: 'B사', price: 328000 },
-    { company: '리퍼센트', price: 400000, highlight: true },
-  ],
-};
-
 export interface ServiceReview {
   title: string;
   content: string;

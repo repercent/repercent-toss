@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { faqData } from '../../constant/faq';
-import { PRICE_COMPARISON, SERVICE_REVIEWS } from '../../constant/service';
+import { SERVICE_REVIEWS } from '../../constant/service';
+import { IMAGE_URL } from '../../constant/env';
 import { formatPrice } from '../../utils/format';
+import usePurchaseHero, { getPriceDiff } from '../../hooks/usePurchaseHero';
 
 import Button from '../Common/Button/Button';
 
@@ -17,44 +19,63 @@ const PICKUP_METHODS = [
 const ServiceComponent = () => {
   const navigate = useNavigate();
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  // 모델은 화면에 붙은 뒤 받아 온다. 받지 못하면 가격 비교 블록만 빼고 나머지는 그대로 쓴다.
+  const { hero, hasFailed } = usePurchaseHero();
+  const priceDiff = hero ? getPriceDiff(hero) : 0;
 
   const goApply = () => navigate('/step');
+
+  const renderCompare = () => {
+    if (!hero) return <ComparePlaceholder />;
+
+    const prices = [
+      { company: 'A사', price: hero.competitorPrices.A },
+      { company: 'B사', price: hero.competitorPrices.B },
+      { company: '리퍼센트', price: hero.product.price, highlight: true },
+    ];
+
+    return (
+      <CompareBox>
+        <CompareTitle>
+          같은 제품이어도
+          <br />
+          <strong>{formatPrice(priceDiff)}</strong> 더 받아가세요
+        </CompareTitle>
+        <CompareCard>
+          <CompareProduct>
+            <CompareProductImage>
+              <img src={`${IMAGE_URL}/${hero.product.image}`} alt="" width={60} height={60} />
+            </CompareProductImage>
+            <div>
+              <CompareProductName>{hero.product.model}</CompareProductName>
+              <CompareProductSpec>{hero.product.storage} A급</CompareProductSpec>
+            </div>
+          </CompareProduct>
+          <ComparePrices>
+            {prices.map(({ company, price, highlight }) => (
+              <ComparePrice key={company} $highlight={highlight}>
+                <span>{company}</span>
+                <strong>{formatPrice(price)}</strong>
+              </ComparePrice>
+            ))}
+          </ComparePrices>
+        </CompareCard>
+      </CompareBox>
+    );
+  };
 
   return (
     <ServiceBase>
       {/* 가격 비교 */}
-      <Block>
-        <MoneyImage src="/img/service/money_bundle.png" alt="" width={144} height={96} />
-        <CompareBox>
-          <CompareTitle>
-            같은 제품이어도
-            <br />
-            <strong>{PRICE_COMPARISON.extra.toLocaleString('ko-KR')}원</strong> 더 받아가세요
-          </CompareTitle>
-          <CompareCard>
-            <CompareProduct>
-              <CompareProductImage>
-                <img src="/img/service/product.png" alt="" width={60} height={60} />
-              </CompareProductImage>
-              <div>
-                <CompareProductName>{PRICE_COMPARISON.product}</CompareProductName>
-                <CompareProductSpec>{PRICE_COMPARISON.spec}</CompareProductSpec>
-              </div>
-            </CompareProduct>
-            <ComparePrices>
-              {PRICE_COMPARISON.prices.map(({ company, price, highlight }) => (
-                <ComparePrice key={company} $highlight={highlight}>
-                  <span>{company}</span>
-                  <strong>{formatPrice(price)}</strong>
-                </ComparePrice>
-              ))}
-            </ComparePrices>
-          </CompareCard>
-        </CompareBox>
-        <CheckPriceButton type="button" onClick={goApply}>
-          내 폰은 얼마인지 알아보기
-        </CheckPriceButton>
-      </Block>
+      {!hasFailed && (!hero || priceDiff > 0) && (
+        <Block>
+          <MoneyImage src="/img/service/money_bundle.png" alt="" width={144} height={96} />
+          {renderCompare()}
+          <CheckPriceButton type="button" onClick={goApply}>
+            내 폰은 얼마인지 알아보기
+          </CheckPriceButton>
+        </Block>
+      )}
 
       {/* 서비스 소개 */}
       <IntroSection>
@@ -248,6 +269,33 @@ const ServiceComponent = () => {
   );
 };
 
+/** 모델을 받기 전 가격 비교 자리. 비워 두면 카드가 붙을 때 아래 내용이 밀려 내려간다. */
+const ComparePlaceholder = () => (
+  <CompareBox aria-hidden>
+    <PlaceholderTitle>
+      <Skeleton $width="160px" $height="20px" />
+      <Skeleton $width="220px" $height="20px" />
+    </PlaceholderTitle>
+    <CompareCard>
+      <CompareProduct>
+        <Skeleton $width="60px" $height="60px" />
+        <PlaceholderLines>
+          <Skeleton $width="128px" $height="14px" />
+          <Skeleton $width="80px" $height="12px" />
+        </PlaceholderLines>
+      </CompareProduct>
+      <ComparePrices>
+        {Array.from({ length: 3 }, (_, i) => (
+          <ComparePrice key={i}>
+            <Skeleton $width="40px" $height="12px" />
+            <Skeleton $width="72px" $height="12px" />
+          </ComparePrice>
+        ))}
+      </ComparePrices>
+    </CompareCard>
+  </CompareBox>
+);
+
 export default ServiceComponent;
 
 const ServiceBase = styled.main`
@@ -304,8 +352,15 @@ const CompareProduct = styled.div`
 `;
 
 const CompareProductImage = styled.div`
+  flex-shrink: 0;
   width: 60px;
   height: 60px;
+
+  & img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
 `;
 
 const CompareProductName = styled.p`
@@ -351,6 +406,31 @@ const ComparePrice = styled.div<{ $highlight?: boolean }>`
     line-height: 18px;
     color: ${({ $highlight, theme }) => ($highlight ? theme.primary[700] : '#9CA2AE')};
   }
+`;
+
+const Skeleton = styled.span<{ $width: string; $height: string }>`
+  display: block;
+  flex-shrink: 0;
+  width: ${({ $width }) => $width};
+  height: ${({ $height }) => $height};
+  border-radius: 6px;
+  background-color: #eef1f4;
+`;
+
+// 제목 두 줄(줄 높이 28px)과 같은 높이
+const PlaceholderTitle = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 56px;
+  padding: 4px 8px;
+`;
+
+const PlaceholderLines = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-left: 8px;
 `;
 
 const CheckPriceButton = styled.button`
