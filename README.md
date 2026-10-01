@@ -4,15 +4,18 @@ Apps in Toss 프로젝트입니다. (`@apps-in-toss/web-framework` SDK 3.x)
 
 ## 시작하기
 
+Node.js 24(`.nvmrc`)와 pnpm이 필요해요. pnpm이 없으면 `corepack enable`로 켜요. 버전은 `package.json`의 `packageManager`를 따라요.
+
 ```bash
-npm run dev
+pnpm install
+pnpm dev
 ```
 
 로컬 브라우저에서 바로 확인할 수 있어요. 개발 모드에서는 SDK가 AIT Devtools 목업으로 대체되고, 화면 오른쪽 아래 `AIT` 버튼으로 devtools 패널을 열 수 있어요.
 
 ## 환경변수
 
-프로젝트 루트의 `.env`(git에 올라가지 않음)에 설정해요. 값은 빌드 시점에 번들에 들어가므로 `npm run build` 전에 설정돼 있어야 해요.
+프로젝트 루트의 `.env`(git에 올라가지 않음)에 설정해요. 값은 빌드 시점에 번들에 들어가므로 `pnpm build` 전에 설정돼 있어야 해요.
 
 | 이름                    | 필수 | 설명                                                                                                                                                                                                         |
 | ----------------------- | ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -44,8 +47,8 @@ GitHub Environment `dev`, `prod`에 secret을 등록해요. 저장소가 공개�
 로컬에서 직접 올릴 수도 있어요. `.env`에 API 주소가 없으면 운영 주소로 빌드되니 대상 서버를 확인해 주세요.
 
 ```bash
-npm run build   # vite build && ait build → repercent-toss.ait
-npm run deploy  # ait deploy
+pnpm build       # vite build && ait build → repercent-toss.ait
+pnpm run deploy  # ait deploy (`pnpm deploy`는 pnpm 내장 명령이라 run을 붙여요)
 ```
 
 서버 CORS 허용 Origin에 미니앱 Origin이 있어야 API를 호출할 수 있어요(appName `repercent-toss` 기준).

@@ -94,14 +94,14 @@
 
 - [ ] 앱 등록: 앱 이름, 영문명, appName `repercent-toss`, 로고 600×600 PNG, 카테고리
 - [ ] 중고폰 매입이 어떤 카테고리·정책에 해당하는지 채널톡으로 사전 문의 (중고거래는 별도 서류 대상)
-- [ ] `npm run build` → 콘솔 업로드(또는 `npm run deploy`) → QR로 토스 앱 테스트 → 검토 요청 → 출시
+- [ ] `pnpm build` → 콘솔 업로드(또는 `pnpm run deploy`) → QR로 토스 앱 테스트 → 검토 요청 → 출시
 - [ ] 검수 체크: 외부 링크(채널톡 문의, CJ 배송조회)가 "서비스에 꼭 필요한 링크"로 인정되는지 확인
 - SDK 3.x 번들은 출시 후 2.x로 되돌릴 수 없어요.
 
 ### 7. 기술 부채 — 출시 후 가능
 
 - [ ] 로컬 개발 프록시(`vite.config.ts`)가 **운영** purchase 서버를 가리켜요. 로컬에서 신청하면 운영 DB에 기록돼요. `VITE_PURCHASE_API_URL`로 dev 서버를 쓰거나 프록시 대상을 바꾸는 것 검토
-- [ ] `npm audit` 취약점 6건 (axios, react-router 등, SDK 업그레이드 전부터 존재)
+- [ ] `pnpm audit` 취약점 6건 (axios, react-router 등, SDK 업그레이드 전부터 존재)
 - [ ] `tsc` 기존 오류 9건 (`@/type/common` 경로 별칭 미설정, 미사용 코드). 빌드에는 영향 없음
 - [ ] 쓰지 않는 이미지 정리: `public/img/agreement/galaxy.webp`·`apple.webp`(약 5.6MB), `public/img/pickup/*.svg` 등. `.ait` 크기 약 18MB(한도 100MB)
 - [ ] `GradeContainer`가 오류 시 없는 경로 `/err`로 이동
