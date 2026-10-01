@@ -9,22 +9,24 @@ import {
   PURCHASE_STATUS,
 } from '../constant/purchase';
 import { purchaseApi } from '../utils/api';
-import { getUserId } from '../utils/user';
 import { getErrorMessage } from '../utils/format';
 import useToast from '../hooks/useToast';
+import useAuth from '../hooks/useAuth';
 
 import CancelComponent from '../components/History/CancelComponent';
+import LoginRequired from '../components/Common/LoginRequired';
 
 const CancelContainer = () => {
   const navigate = useNavigate();
   const { purchaseId } = useParams();
   const showToast = useToast();
-  const userId = getUserId();
+  const { status, userId } = useAuth();
 
   const [detail, setDetail] = useState<PurchaseDetailData | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
+    if (status !== 'member') return;
     const fetchDetail = async () => {
       try {
         const res = await purchaseApi.get<PurchaseDetailData>(`/purchases/${purchaseId}`);
@@ -42,7 +44,7 @@ const CancelContainer = () => {
       }
     };
     fetchDetail();
-  }, [purchaseId, userId, navigate, showToast]);
+  }, [status, purchaseId, userId, navigate, showToast]);
 
   // 상세에서 진입했다면 기존 상세 화면으로 돌아가고, 직접 진입이면 상세로 교체
   const backToDetail = (id: number) => {
@@ -68,6 +70,8 @@ const CancelContainer = () => {
     }
   };
 
+  if (status === 'guest')
+    return <LoginRequired message={'토스로 로그인한 뒤\n다시 시도해 주세요'} />;
   if (!detail) return null;
 
   const reasonGroups =
