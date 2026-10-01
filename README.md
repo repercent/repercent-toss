@@ -23,11 +23,29 @@ npm run dev
 
 ## 배포하기
 
-- 앱인토스 배포 API 키는 [앱인토스 콘솔](https://apps-in-toss.toss.im/) > 워크스페이스 > API 키 > 콘솔 API 키 에서 발급받을 수 있어요.
+작업 브랜치 → `dev` → `main` 순서로 병합하고, 브랜치에 push되면 GitHub Actions가 번들을 빌드해 앱인토스 콘솔에 올려요.
+
+| 브랜치                      | workflow                            | 번들이 호출하는 서버                                                     |
+| --------------------------- | ----------------------------------- | ------------------------------------------------------------------------ |
+| `dev`                       | `.github/workflows/deploy-dev.yml`  | 개발 (`dev-common-api-purchase.repercent.com`, `dev-auth.repercent.com`) |
+| `main` (dev → main PR 머지) | `.github/workflows/deploy-prod.yml` | 운영 (`purchase.repercent.com`, `auth.repercent.com`)                    |
+
+- 업로드만 하고 출시하지는 않아요. 실행 결과 요약(Slack을 설정했다면 Slack에도)에 테스트 스킴 `intoss-private://appsintoss?_deploymentId=…`이 남고, 콘솔 '테스트하기'의 QR로도 열 수 있어요. 토스 앱에 로그인한 워크스페이스 멤버(만 19세 이상)만 열 수 있어요.
+- 출시는 콘솔에서 **main 번들**(업로드 메모 `prod <커밋>`)로 검토를 요청하고, 승인되면 '출시하기'를 눌러요. dev 번들(메모 `dev <커밋>`)은 개발 서버를 호출하니 검토 요청에 쓰면 안 돼요.
+
+GitHub Environment `dev`, `prod`에 secret을 등록해요. 저장소가 공개라서 각 Environment의 배포 브랜치를 `dev`, `main`으로 제한해 주세요. 자세한 방법은 [배포 설정 가이드](docs/deploy-setup.md)를 참고해 주세요.
+
+| 이름                | 필수 | 설명                                                                                              |
+| ------------------- | ---- | ------------------------------------------------------------------------------------------------- |
+| `AIT_API_KEY`       | O    | 앱인토스 API 키. [앱인토스 콘솔](https://apps-in-toss.toss.im/) > 워크스페이스 > 키에서 발급해요. |
+| `VITE_JUSO_API_KEY` | O    | 도로명주소 검색 API 승인키 (위 환경변수 참고)                                                     |
+| `SLACK_WEBHOOK_URL` |      | 배포 결과 알림. 없으면 알림만 건너뛰어요.                                                         |
+
+로컬에서 직접 올릴 수도 있어요. `.env`에 API 주소가 없으면 운영 주소로 빌드되니 대상 서버를 확인해 주세요.
 
 ```bash
 npm run build   # vite build && ait build → repercent-toss.ait
-npm run deploy
+npm run deploy  # ait deploy
 ```
 
 서버 CORS 허용 Origin에 미니앱 Origin이 있어야 API를 호출할 수 있어요(appName `repercent-toss` 기준).
