@@ -42,19 +42,23 @@ jobs:
             exit 1
           fi
 
+      # package.json의 packageManager에 적힌 pnpm 버전을 설치한다.
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-          cache: npm
+          cache: pnpm
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build (dev)
         env:
           VITE_JUSO_API_KEY: ${{ secrets.VITE_JUSO_API_KEY }}
-        run: npm run build
+        run: pnpm build
 
       # 콘솔에 테스트 번들로 올라갈 뿐 출시되지 않는다. 메모로 콘솔에서 dev 번들임을 구분한다.
       - name: Upload bundle
@@ -63,7 +67,7 @@ jobs:
           AIT_API_KEY: ${{ secrets.AIT_API_KEY }}
         run: |
           set -o pipefail
-          npx ait deploy --api-key "$AIT_API_KEY" --scheme-only -m "$APP_ENV ${GITHUB_SHA::7}" | tee deploy.log
+          pnpm exec ait deploy --api-key "$AIT_API_KEY" --scheme-only -m "$APP_ENV ${GITHUB_SHA::7}" | tee deploy.log
           SCHEME=$(grep -o 'intoss-private://[^[:space:]]*' deploy.log | tail -1)
           if [ -z "$SCHEME" ]; then
             echo "::error::업로드 결과에서 테스트 스킴을 찾지 못했습니다."

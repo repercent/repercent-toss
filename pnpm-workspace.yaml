@@ -1,0 +1,5 @@
+# pnpm 11은 목록에 없는 의존성이 설치 스크립트를 가지면 install이 실패한다(strictDepBuilds 기본값 true).
+allowBuilds:
+  esbuild: true
+  # @apps-in-toss/cli 의존성. postinstall은 버전 표기 경고만 출력해 실행하지 않는다.
+  protobufjs: false
