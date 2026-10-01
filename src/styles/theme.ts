@@ -1,11 +1,3 @@
-const breakpoints = {
-  desktop: 1000,
-};
-
-const media = {
-  desktop: `@media (min-width: ${breakpoints.desktop}px)`,
-};
-
 const theme = {
   primary: {
     700: '#004EDB',
@@ -37,8 +29,6 @@ const theme = {
     100: '#FF9EB5',
     50: '#FFEBEF',
   },
-  breakpoints,
-  media,
 };
 
 export default theme;

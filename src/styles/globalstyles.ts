@@ -16,7 +16,7 @@ ${Reset}
     font-weight: 400;
     font-size: 14px;
     max-width: 720px;
-    min-width: 320px;
+    min-width: 280px;
     margin: 0 auto;
     color: #111828;
     line-height: 21px;
