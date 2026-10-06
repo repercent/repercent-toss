@@ -17,6 +17,12 @@ pnpm dev
 
 프로젝트 루트의 `.env`(git에 올라가지 않음)에 설정해요. 값은 빌드 시점에 번들에 들어가므로 `pnpm build` 전에 설정돼 있어야 해요.
 
+`pnpm dev`는 `VITE_JUSO_API_KEY`가 비어 있으면 AWS Secrets Manager `repercent/toss/dev/deploy`(dev 배포와 같은 키)에서 읽어 와요.
+
+- **로컬 AWS 자격 증명이 필요해요.** `aws` CLI가 로그인돼 있고, 그 계정에 이 secret의 `secretsmanager:GetSecretValue` 권한이 있어야 해요 (`aws sts get-caller-identity`로 확인).
+- 자격 증명이 없거나 키가 비어 있으면 경고만 나오고 주소 검색 없이 시작해요. 이때는 `.env.local`에 `VITE_JUSO_API_KEY`를 직접 넣어 주세요.
+- `pnpm build`는 Secrets Manager를 읽지 않아요. CI는 workflow가 키를 넣어 줘요.
+
 | 이름                    | 필수 | 설명                                                                                                                                                                                                         |
 | ----------------------- | ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `VITE_JUSO_API_KEY`     | O    | 도로명주소 검색 API 승인키. [주소기반산업지원서비스](https://business.juso.go.kr)에서 검색 API를 신청해 발급받아요. 없으면 주소 검색에서 안내 문구만 보여요.                                                 |

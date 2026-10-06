@@ -27,6 +27,7 @@
 
 - 값을 채팅·명령어 인자·커밋에 적지 마세요. 저장소가 공개라 workflow 로그도 공개인데, 읽은 값은 로그에서 가려져요.
 - job에 `environment:`를 넣지 마세요. 넣으면 OIDC 토큰의 sub가 `environment:dev`로 바뀌어 역할을 받지 못해요.
+- 로컬 `pnpm dev`도 이 secret에서 `VITE_JUSO_API_KEY`를 읽어요. 로컬 AWS 자격 증명이 필요해요 ([README 환경변수](../README.md#환경변수)).
 
 ## 3. Environment `prod`
 
