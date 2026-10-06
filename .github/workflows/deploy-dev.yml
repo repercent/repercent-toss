@@ -2,6 +2,7 @@ name: Deploy to Apps in Toss (Dev)
 
 permissions:
   contents: read
+  id-token: write # AWS 역할을 OIDC로 받는다
 
 on:
   push:
@@ -22,25 +23,16 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    # GitHub Environment 'dev'의 secret을 읽는다.
+    # 배포 키는 AWS Secrets Manager `repercent/toss/dev/deploy`(JSON)에서 읽는다.
     #   AIT_API_KEY        앱인토스 콘솔 API 키 (워크스페이스 > 키)
     #   VITE_JUSO_API_KEY  도로명주소 검색 API 승인키. 빌드 시점에 번들에 들어간다.
     #   SLACK_WEBHOOK_URL  (선택) 배포 결과 알림
-    environment: dev
+    # job에 environment를 지정하면 OIDC 토큰의 sub가 `environment:dev`로 바뀌어
+    # 역할 신뢰 정책(`repo:repercent/*:ref:refs/heads/dev`)과 맞지 않으므로 지정하지 않는다.
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Check deploy configuration
-        env:
-          AIT_API_KEY: ${{ secrets.AIT_API_KEY }}
-          VITE_JUSO_API_KEY: ${{ secrets.VITE_JUSO_API_KEY }}
-        run: |
-          if [ -z "$AIT_API_KEY" ] || [ -z "$VITE_JUSO_API_KEY" ]; then
-            echo "::error::GitHub Environment 'dev'에 AIT_API_KEY, VITE_JUSO_API_KEY secret을 설정해야 합니다. (README 배포하기 참고)"
-            exit 1
-          fi
 
       # package.json의 packageManager에 적힌 pnpm 버전을 설치한다.
       - name: Setup pnpm
@@ -55,16 +47,36 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # 키는 의존성 설치 뒤에 읽는다. 설치 스크립트가 배포 키를 보지 않게 하기 위해서다.
+      # 다른 repercent 저장소와 같은 OIDC 역할. 이 역할에는 위 secret 읽기 권한만 더했다.
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: arn:aws:iam::182584328818:role/GitHubActions-dev
+          aws-region: ap-northeast-2
+
+      # JSON 키 이름 그대로 환경변수로 넣고, 값은 로그에서 가린다. (secret ID 앞 쉼표 = 이름 접두어 없음)
+      - name: Load deploy secrets
+        uses: aws-actions/aws-secretsmanager-get-secrets@v3
+        with:
+          secret-ids: |
+            ,repercent/toss/dev/deploy
+          parse-json-secrets: true
+
+      - name: Check deploy configuration
+        run: |
+          if [ -z "$AIT_API_KEY" ] || [ -z "$VITE_JUSO_API_KEY" ]; then
+            echo "::error::AWS Secrets Manager 'repercent/toss/dev/deploy'에 AIT_API_KEY, VITE_JUSO_API_KEY 값을 넣어야 합니다. (docs/deploy-setup.md 참고)"
+            exit 1
+          fi
+
+      # 빌드에는 번들에 들어갈 주소 키만 넘긴다.
       - name: Build (dev)
-        env:
-          VITE_JUSO_API_KEY: ${{ secrets.VITE_JUSO_API_KEY }}
-        run: pnpm build
+        run: env -u AIT_API_KEY -u SLACK_WEBHOOK_URL pnpm build
 
       # 콘솔에 테스트 번들로 올라갈 뿐 출시되지 않는다. 메모로 콘솔에서 dev 번들임을 구분한다.
       - name: Upload bundle
         id: deploy
-        env:
-          AIT_API_KEY: ${{ secrets.AIT_API_KEY }}
         run: |
           set -o pipefail
           pnpm exec ait deploy --api-key "$AIT_API_KEY" --scheme-only -m "$APP_ENV ${GITHUB_SHA::7}" | tee deploy.log
@@ -92,8 +104,6 @@ jobs:
       - name: Check Slack webhook configuration
         id: slack-webhook
         if: always()
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
           if [ -n "$SLACK_WEBHOOK_URL" ]; then
             echo "configured=true" >> "$GITHUB_OUTPUT"
@@ -106,7 +116,7 @@ jobs:
         if: ${{ failure() && steps.slack-webhook.outputs.configured == 'true' }}
         uses: slackapi/slack-github-action@v4.0.0
         with:
-          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook: ${{ env.SLACK_WEBHOOK_URL }}
           webhook-type: incoming-webhook
           payload: |
             {
@@ -126,7 +136,7 @@ jobs:
         if: ${{ success() && steps.slack-webhook.outputs.configured == 'true' }}
         uses: slackapi/slack-github-action@v4.0.0
         with:
-          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook: ${{ env.SLACK_WEBHOOK_URL }}
           webhook-type: incoming-webhook
           payload: |
             {

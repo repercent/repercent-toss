@@ -36,7 +36,7 @@ pnpm dev
 - 업로드만 하고 출시하지는 않아요. 실행 결과 요약(Slack을 설정했다면 Slack에도)에 테스트 스킴 `intoss-private://appsintoss?_deploymentId=…`이 남고, 콘솔 '테스트하기'의 QR로도 열 수 있어요. 토스 앱에 로그인한 워크스페이스 멤버(만 19세 이상)만 열 수 있어요.
 - 출시는 콘솔에서 **main 번들**(업로드 메모 `prod <커밋>`)로 검토를 요청하고, 승인되면 '출시하기'를 눌러요. dev 번들(메모 `dev <커밋>`)은 개발 서버를 호출하니 검토 요청에 쓰면 안 돼요.
 
-GitHub Environment `dev`, `prod`에 secret을 등록해요. 저장소가 공개라서 각 Environment의 배포 브랜치를 `dev`, `main`으로 제한해 주세요. 자세한 방법은 [배포 설정 가이드](docs/deploy-setup.md)를 참고해 주세요.
+배포 키는 아래 이름으로 넣어요. dev는 AWS Secrets Manager `repercent/toss/dev/deploy`(JSON)에서 GitHub OIDC로 읽고, prod는 아직 GitHub Environment `prod`의 secret을 읽어요. 자세한 방법은 [배포 설정 가이드](docs/deploy-setup.md)를 참고해 주세요.
 
 | 이름                | 필수 | 설명                                                                                              |
 | ------------------- | ---- | ------------------------------------------------------------------------------------------------- |
