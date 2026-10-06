@@ -38,7 +38,6 @@ const getTrackingNumber = (detail: PurchaseDetailData) => {
 
 const HistoryDetailComponent = ({ detail, view, onAction, onTrack }: HistoryDetailProps) => {
   const trackingNumber = getTrackingNumber(detail);
-  const address = [detail.address1, detail.address2].filter(Boolean).join(' ');
 
   const renderActions = () => {
     if (view.actions.length === 0) return null;
@@ -128,10 +127,16 @@ const HistoryDetailComponent = ({ detail, view, onAction, onTrack }: HistoryDeta
           <Card>
             <UserInfo>
               <InfoText>{detail.name}</InfoText>
-              {detail.phone && <InfoLabel>{formatPhone(detail.phone)}</InfoLabel>}
+              {detail.phone && <InfoText>{formatPhone(detail.phone)}</InfoText>}
               {detail.zipcode && (
                 <InfoText>
-                  [{detail.zipcode}] {address}
+                  [{detail.zipcode}] {detail.address1}
+                  {detail.address2 && (
+                    <>
+                      <br />
+                      {detail.address2}
+                    </>
+                  )}
                 </InfoText>
               )}
             </UserInfo>
