@@ -1,11 +1,17 @@
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
+import useHideBackButton from '../../hooks/useHideBackButton';
+
 import BottomCTA from '../Common/BottomCTA';
 import CTAButton from '../Common/Button/CTAButton';
 
 const CompleteComponent = () => {
   const navigate = useNavigate();
+  const goHome = () => navigate('/', { replace: true });
+
+  // 시안처럼 뒤로 버튼을 숨긴다. 신청을 마친 뒤 뒤로 가면 신청 흐름(주소 입력)으로 돌아가므로 시스템 뒤로가기도 닫기와 같게 메인으로 보낸다.
+  useHideBackButton(goHome);
 
   return (
     <CompleteBase>
@@ -20,7 +26,7 @@ const CompleteComponent = () => {
       </Result>
 
       <BottomCTA>
-        <CTAButton variant="secondary" onClick={() => navigate('/', { replace: true })}>
+        <CTAButton variant="secondary" onClick={goHome}>
           닫기
         </CTAButton>
         <CTAButton onClick={() => navigate('/history', { replace: true })}>내역 보러가기</CTAButton>
