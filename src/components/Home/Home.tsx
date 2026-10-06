@@ -72,7 +72,9 @@ const HomeBase = styled.main`
 const Header = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 6px;
+  text-align: center;
 `;
 
 const Title = styled.h1`

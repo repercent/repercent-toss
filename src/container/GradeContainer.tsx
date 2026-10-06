@@ -65,6 +65,8 @@ const GradeContainer = () => {
             ...state,
             // 웹과 같이 등급 이미지를 신청 본문에 담는다. 없으면 판매 내역에 상품 사진이 비어 나온다.
             image: gradeDetail[0]?.image,
+            // 기타가 아닌 일반 신청. 서버는 이 신청의 기종·용량을 슈퍼리스트로 확인한다.
+            etc: false,
           },
         });
       }}

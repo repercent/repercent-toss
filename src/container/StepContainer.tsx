@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { PurchaseSelectState } from '../type/purchase';
+import { Category, ETC, ETC_MODELS, ETC_SERIES } from '../constant/purchase';
 import { purchaseApi } from '../utils/api';
+import { getEtcType, orderSeries, withEtcOption } from '../utils/purchaseEtc';
 
 import StepComponent from '../components/Step/StepComponent';
 
@@ -36,18 +38,19 @@ const StepContainer = () => {
     return res.data?.[0];
   };
 
-  /** 브랜드 선택 */
-  const onSelectCategory = async (category: string) => {
-    if (category === '기타') {
-      setSelect({ category });
-      return;
-    }
-
+  /** 브랜드 선택. 위 단계를 바꾸면 아래 단계와 기타 모델명은 더 이상 맞는 값이 아니라 함께 지운다. */
+  const onSelectCategory = async (category: Category) => {
     setSelect({ category });
+    setOptions({ subcategories: [], models: [], storages: [] });
+
+    if (category === ETC) return;
 
     const data = await fetchData({ category });
     setOptions({
-      subcategories: toOptions(data?.subcategory),
+      subcategories: withEtcOption(
+        orderSeries(toOptions(data?.subcategory), category),
+        ETC_SERIES[category]
+      ),
       models: [],
       storages: [],
     });
@@ -55,19 +58,32 @@ const StepContainer = () => {
 
   /** 시리즈 선택 */
   const onSelectSubCategory = async (subcategory: string) => {
-    setSelect((prev) => ({ ...prev, subcategory, model: undefined, storage: undefined }));
+    setSelect((prev) => ({
+      ...prev,
+      subcategory,
+      model: undefined,
+      storage: undefined,
+      customModel: undefined,
+    }));
+    setOptions((prev) => ({ ...prev, models: [], storages: [] }));
+
+    // 기타 칩은 서버 목록에 없는 값이라 그 아래 목록을 묻지 않는다.
+    if (subcategory === ETC_SERIES[select.category as Category]) return;
 
     const data = await fetchData({ category: select.category!, subcategory });
     setOptions((prev) => ({
       ...prev,
-      models: toOptions(data?.model),
+      models: withEtcOption(toOptions(data?.model), ETC_MODELS[subcategory]),
       storages: [],
     }));
   };
 
   /** 모델 선택 */
   const onSelectModel = async (model: string) => {
-    setSelect((prev) => ({ ...prev, model, storage: undefined }));
+    setSelect((prev) => ({ ...prev, model, storage: undefined, customModel: undefined }));
+    setOptions((prev) => ({ ...prev, storages: [] }));
+
+    if (model === ETC_MODELS[select.subcategory!]) return;
 
     const data = await fetchData({
       category: select.category!,
@@ -90,22 +106,27 @@ const StepContainer = () => {
     setSelect((prev) => ({ ...prev, customModel: value }));
   };
 
-  const isValid =
-    select.category === '기타'
-      ? true
-      : !!select.category && !!select.subcategory && !!select.model && !!select.storage;
+  const etcType = getEtcType(select);
+
+  // 기타는 모델명을 적지 않아도 바로 신청할 수 있다.
+  const isValid = etcType
+    ? true
+    : !!select.category && !!select.subcategory && !!select.model && !!select.storage;
 
   const handleSubmit = async () => {
     if (!select.category) return;
 
-    if (select.category === '기타') {
+    // 기타인 경우. 예상시세 없이 수거 단계로 가고, 위에서 고른 브랜드·시리즈는 그대로 보낸다.
+    // 모델 기타 칩 값은 시리즈와 1:1이라 보내지 않고 모델명 칸에 적은 값을 보낸다(브랜드 기타와 같다).
+    if (etcType) {
       navigate('/pickup', {
         state: {
-          category: '기타',
-          customModel: select.customModel ?? '',
-          subcategory: '',
+          category: select.category,
+          customModel: '',
+          subcategory: etcType === 'brand' ? '' : (select.subcategory ?? ''),
           model: select.customModel ?? '',
           storage: '',
+          etc: true,
         },
       });
       return;
@@ -125,6 +146,7 @@ const StepContainer = () => {
       options={options}
       onClick={handleSubmit}
       isValid={isValid}
+      etcType={etcType}
       onSelectCategory={onSelectCategory}
       onSelectSubCategory={onSelectSubCategory}
       onSelectModel={onSelectModel}

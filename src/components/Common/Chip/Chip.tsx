@@ -18,12 +18,11 @@ const Chip = ({ label, selected, disabled, onClick }: ChipProps) => {
 export default Chip;
 
 const ChipButton = styled.button<{ $selected?: boolean }>`
-  // width: 31%;
   min-height: 48px;
-  padding: 14px 4px;
-  border-radius: 12px;
+  padding: 4px;
+  border-radius: 8px;
   border: 1px solid
     ${({ $selected, theme }) => ($selected ? theme.secondary[700] : theme.gray[200])};
-  color: ${({ $selected, theme }) => ($selected ? theme.primary[700] : theme.gray[600])};
+  color: ${({ $selected, theme }) => ($selected ? theme.primary[700] : theme.gray[700])};
   font-weight: ${({ $selected }) => ($selected ? 600 : 400)};
 `;

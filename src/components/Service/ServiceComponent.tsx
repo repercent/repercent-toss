@@ -68,13 +68,13 @@ const ServiceComponent = () => {
     <ServiceBase>
       {/* 가격 비교 */}
       {!hasFailed && (!hero || priceDiff > 0) && (
-        <Block>
+        <HeroBlock>
           <MoneyImage src="/img/service/money_bundle.png" alt="" width={144} height={96} />
           {renderCompare()}
           <CheckPriceButton type="button" onClick={goApply}>
             내 폰은 얼마인지 알아보기
           </CheckPriceButton>
-        </Block>
+        </HeroBlock>
       )}
 
       {/* 서비스 소개 */}
@@ -219,13 +219,13 @@ const ServiceComponent = () => {
           <ResultCards>
             <ResultCard $tone="positive">
               <ResultTitle>견적에 만족해요</ResultTitle>
-              <ResultPill $tone="positive">금액 입금</ResultPill>
               <img src="/img/service/satisfied.png" alt="" height={93} />
+              <ResultPill $tone="positive">금액 입금</ResultPill>
             </ResultCard>
             <ResultCard $tone="negative">
               <ResultTitle>견적이 아쉬워요</ResultTitle>
-              <ResultPill $tone="negative">무료 반품</ResultPill>
               <img src="/img/service/unsatisfied.png" alt="" height={93} />
+              <ResultPill $tone="negative">무료 반품</ResultPill>
             </ResultCard>
           </ResultCards>
         </ProcessList>
@@ -244,7 +244,7 @@ const ServiceComponent = () => {
                   aria-expanded={isOpen}
                   onClick={() => setOpenFaq(isOpen ? null : index)}
                 >
-                  <NumberBadge>Q</NumberBadge>
+                  <FaqBadge>Q</FaqBadge>
                   <FaqText>{faq.question}</FaqText>
                   <img
                     src={isOpen ? '/ico/ico_arrow_up.svg' : '/ico/ico_arrow_down.svg'}
@@ -310,7 +310,15 @@ const Block = styled.section`
   padding: 0 16px;
 `;
 
+/** 돈다발 이미지가 제목 오른쪽 위에 겹쳐 걸리도록 기준을 잡는다. */
+const HeroBlock = styled(Block)`
+  position: relative;
+`;
+
 const MoneyImage = styled.img`
+  position: absolute;
+  top: -19px;
+  right: 7px;
   display: block;
 `;
 
@@ -321,6 +329,7 @@ const CompareBox = styled.div`
 `;
 
 const CompareTitle = styled.h1`
+  position: relative;
   padding: 0 8px;
   font-size: 20px;
   font-weight: 700;
@@ -492,10 +501,12 @@ const KpiSection = styled.div`
 const KpiTitle = styled.h2`
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 4px;
   font-size: 21px;
-  font-weight: 700;
-  line-height: 27px;
+  font-weight: 800;
+  line-height: 30px;
+  text-align: center;
   color: #1a1a1a;
 
   & small {
@@ -515,6 +526,8 @@ const KpiCards = styled.div`
 const KpiCard = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   padding: 16px 12px 12px;
   border: 1px solid #edf4f9;
   border-radius: 12px;
@@ -524,13 +537,14 @@ const KpiCard = styled.div`
 
 const KpiValue = styled.strong`
   font-size: 29px;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 32px;
   color: #007aff;
 
   & small {
     margin-left: 2px;
     font-size: 14px;
+    font-weight: 600;
     color: #555;
   }
 `;
@@ -733,8 +747,7 @@ const ResultCard = styled.div<{ $tone: 'positive' | 'negative' }>`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  padding: 16px 12px 8px;
+  padding: 16px 12px;
   border: 1px solid ${({ $tone }) => ($tone === 'positive' ? '#269BFF' : '#FF9EB5')};
   border-radius: 12px;
   background-color: ${({ $tone }) => ($tone === 'positive' ? '#F4F8FF' : '#F9FAFC')};
@@ -760,23 +773,25 @@ const ResultPill = styled.span<{ $tone: 'positive' | 'negative' }>`
 const FaqList = styled.ul`
   display: flex;
   flex-direction: column;
+  gap: 16px;
 `;
 
-const FaqItem = styled.li`
-  border-bottom: 1px solid #e6e7eb;
-`;
+const FaqItem = styled.li``;
 
+/** 질문 줄 아래에 구분선이 붙고, 답변은 선 아래에 들여쓰지 않고 이어진다. */
 const FaqQuestion = styled.button`
   width: 100%;
+  min-height: 48px;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 8px;
-  padding: 14px 0;
+  border-bottom: 1px solid #e6e7eb;
   text-align: left;
+`;
 
-  & img {
-    margin-top: 2px;
-  }
+const FaqBadge = styled(NumberBadge)`
+  margin-top: 0;
+  background-color: #269bff;
 `;
 
 const FaqText = styled.span`
@@ -788,7 +803,7 @@ const FaqText = styled.span`
 `;
 
 const FaqAnswer = styled.p`
-  padding: 0 0 16px 28px;
+  padding-top: 16px;
   font-size: 14px;
   line-height: 21px;
   color: #111828;

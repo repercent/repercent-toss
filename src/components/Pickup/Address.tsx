@@ -70,7 +70,7 @@ const Address = () => {
 
         <Field label="주소">
           <FieldButton
-            icon="/ico/ico_search.svg"
+            icon="/ico/ico_search_placeholder.svg"
             placeholder={!shippingInfo.zipcode}
             onClick={openSearch}
           >

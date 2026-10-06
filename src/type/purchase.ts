@@ -17,6 +17,8 @@ export type PurchaseSelectState = {
   customModel?: string;
   /** 예상 시세 단계에서 채워져 매입 신청 본문으로 함께 전송된다 (서버가 상품 이미지로 저장). */
   image?: string;
+  /** 목록에 없는 기종을 기타로 적어 낸 신청. 서버는 이 신청만 슈퍼리스트 기종·용량 확인을 건너뛴다. */
+  etc?: boolean;
 };
 
 export interface PurchaseGradeProps {
