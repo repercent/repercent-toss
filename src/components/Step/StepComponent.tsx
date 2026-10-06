@@ -440,7 +440,8 @@ const ChipGroup = styled.div`
 
 const CheckModel = styled.p`
   position: relative;
-  color: ${({ theme }) => theme.pink[200]};
+  color: ${({ theme }) => theme.gray[700]};
+  text-decoration: underline;
   padding-left: 20px;
   padding-top: 16px;
   cursor: pointer;
@@ -450,7 +451,7 @@ const CheckModel = styled.p`
     left: 0;
     top: calc(50% + 8px);
     transform: translateY(-50%);
-    background-image: url('/ico/ico_tips.svg');
+    background-image: url('/ico/ico_tip.svg');
     background-size: cover;
     width: 16px;
     height: 16px;
