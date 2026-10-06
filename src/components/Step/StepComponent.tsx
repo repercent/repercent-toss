@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { PurchaseSelectState } from '../../type/purchase';
+import { CATEGORIES, Category, EtcType } from '../../constant/purchase';
 import parseStorage from '../../utils/parseStorage';
 
 import H4 from '../Common/Title/H4';
@@ -19,20 +20,23 @@ interface Props {
     models: string[];
     storages: string[];
   };
-  onSelectCategory: (v: string) => void;
+  onSelectCategory: (v: Category) => void;
   onSelectSubCategory: (v: string) => void;
   onSelectModel: (v: string) => void;
   onSelectStorage: (v: string) => void;
   onChangeModel: (v: string) => void;
   onClick: () => void;
   isValid: boolean;
+  /** 고른 기타의 단계. 기타를 고르면 용량 대신 모델명 입력칸이 나온다. */
+  etcType: EtcType | null;
 }
 
 /** 현재 활성화된(열린) 단계를 결정 */
 type ActiveStep = 'category' | 'subcategory' | 'model' | 'storage' | null;
 
-const getActiveStep = (select: PurchaseSelectState): ActiveStep => {
-  if (select.category === '기타') return null;
+const getActiveStep = (select: PurchaseSelectState, etcType: EtcType | null): ActiveStep => {
+  // 기타를 고르면 그 아래는 모델명 입력칸 하나라 더 열 단계가 없다.
+  if (etcType) return null;
   if (!select.category) return 'category';
   if (!select.subcategory) return 'subcategory';
   if (!select.model) return 'model';
@@ -59,15 +63,19 @@ const StepComponent = (props: Props) => {
     onChangeModel,
     onClick,
     isValid,
+    etcType,
   } = props;
   const navigate = useNavigate();
   const [openBottom, setOpenBottom] = useState(false);
   const [selected, setSelected] = useState('Samsung');
 
-  const autoActiveStep = getActiveStep(select);
+  const autoActiveStep = getActiveStep(select, etcType);
   const [manualOpen, setManualOpen] = useState<ActiveStep>(null);
 
   const activeStep = manualOpen ?? autoActiveStep;
+
+  /** 모델 기타를 고른 뒤 모델 목록을 다시 펼친 상태. 입력칸을 숨기고 견적보기를 막는다. */
+  const isEtcModelListOpen = etcType === 'model' && activeStep === 'model';
 
   const handleSelect = (value: 'Samsung' | 'Apple') => () => {
     setSelected(value);
@@ -78,24 +86,36 @@ const StepComponent = (props: Props) => {
     setManualOpen(step);
   };
 
-  /** 선택 시 manualOpen 리셋 */
-  const handleCategorySelect = (category: string) => {
+  /** 다시 펼친 행의 제목을 누르면 고른 값 그대로 접는다. */
+  const handleOpenRowClick = (step: ActiveStep) => {
+    if (manualOpen === step) setManualOpen(null);
+  };
+
+  /**
+   * 선택 시 manualOpen 리셋. 이미 고른 값을 다시 누르면 행만 접고 아래 단계와
+   * 기타 모델명 입력값은 그대로 둔다.
+   */
+  const handleCategorySelect = (category: Category) => {
     setManualOpen(null);
+    if (category === select.category) return;
     onSelectCategory(category);
   };
 
   const handleSubCategorySelect = (subcategory: string) => {
     setManualOpen(null);
+    if (subcategory === select.subcategory) return;
     onSelectSubCategory(subcategory);
   };
 
   const handleModelSelect = (model: string) => {
     setManualOpen(null);
+    if (model === select.model) return;
     onSelectModel(model);
   };
 
   const handleStorageSelect = (storage: string) => {
     setManualOpen(null);
+    if (storage === select.storage) return;
     onSelectStorage(storage);
   };
 
@@ -104,9 +124,9 @@ const StepComponent = (props: Props) => {
     return [...options.storages].sort((a, b) => parseStorage(a) - parseStorage(b));
   }, [options.storages]);
 
-  /** 기타가 아닌 일반 플로우일 때의 렌더링 */
+  /** 브랜드 기타가 아닐 때의 시리즈·모델명·용량 행 */
   const renderNormalFlow = () => {
-    if (!select.category || select.category === '기타') return null;
+    if (!select.category || etcType === 'brand') return null;
 
     return (
       <>
@@ -120,7 +140,10 @@ const StepComponent = (props: Props) => {
           </CollapsedRow>
         ) : activeStep === 'subcategory' ? (
           <SelectBox>
-            <StepHeader>
+            <StepHeader
+              $clickable={manualOpen === 'subcategory'}
+              onClick={() => handleOpenRowClick('subcategory')}
+            >
               <H4>시리즈</H4>
             </StepHeader>
             <ChipGroup>
@@ -136,9 +159,11 @@ const StepComponent = (props: Props) => {
           </SelectBox>
         ) : null}
 
-        {select.subcategory && (
+        {/* 시리즈 기타는 모델 목록 없이 아래 모델명 입력칸으로 바로 간다. */}
+        {select.subcategory && etcType !== 'series' && (
           <>
-            {select.model && activeStep !== 'model' ? (
+            {/* 모델 기타는 접혀 있을 때 아래 모델명 입력칸 제목에 고른 값을 함께 보여 준다. */}
+            {select.model && activeStep !== 'model' && etcType !== 'model' ? (
               <CollapsedRow onClick={() => handleCollapsedRowClick('model')}>
                 <CollapsedLabel>모델명</CollapsedLabel>
                 <CollapsedRight>
@@ -147,7 +172,10 @@ const StepComponent = (props: Props) => {
               </CollapsedRow>
             ) : activeStep === 'model' ? (
               <SelectBox>
-                <StepHeader>
+                <StepHeader
+                  $clickable={manualOpen === 'model'}
+                  onClick={() => handleOpenRowClick('model')}
+                >
                   <H4>모델명</H4>
                 </StepHeader>
                 <ChipGroup>
@@ -165,7 +193,7 @@ const StepComponent = (props: Props) => {
           </>
         )}
 
-        {select.model && (
+        {select.model && !etcType && (
           <>
             {select.storage && activeStep !== 'storage' ? (
               <CollapsedRow onClick={() => handleCollapsedRowClick('storage')}>
@@ -176,7 +204,10 @@ const StepComponent = (props: Props) => {
               </CollapsedRow>
             ) : activeStep === 'storage' ? (
               <SelectBox>
-                <StepHeader>
+                <StepHeader
+                  $clickable={manualOpen === 'storage'}
+                  onClick={() => handleOpenRowClick('storage')}
+                >
                   <H4>용량</H4>
                 </StepHeader>
                 <ChipGroup>
@@ -210,7 +241,7 @@ const StepComponent = (props: Props) => {
         <SelectBox>
           <H4>브랜드</H4>
           <ChipGroup>
-            {['갤럭시', '아이폰', '기타'].map((category) => (
+            {CATEGORIES.map((category) => (
               <Chip
                 key={category}
                 label={category}
@@ -222,24 +253,32 @@ const StepComponent = (props: Props) => {
         </SelectBox>
       )}
 
-      {/* === 기타가 아닐 때 단계형 선택 === */}
+      {/* === 브랜드 기타가 아닐 때 단계형 선택 === */}
       {renderNormalFlow()}
 
-      {/* === 기타 선택 시 === */}
-      {select.category === '기타' && (
+      {/* === 기타 선택 시. 브랜드·시리즈·모델 기타 모두 같은 입력칸과 안내 === */}
+      {etcType && (
         <>
-          <InputBox>
-            <TitleBox>
-              <H4>모델명</H4>
-              <SelectSpan>(선택사항)</SelectSpan>
-            </TitleBox>
-            <Input
-              name="customModel"
-              value={select.customModel ?? ''}
-              placeholder="모델명을 입력해주세요"
-              onChange={(e) => onChangeModel(e.target.value)}
-            />
-          </InputBox>
+          {!isEtcModelListOpen && (
+            <InputBox>
+              <InputHeader
+                $clickable={etcType === 'model'}
+                onClick={etcType === 'model' ? () => handleCollapsedRowClick('model') : undefined}
+              >
+                <TitleBox>
+                  <H4>모델명</H4>
+                  <SelectSpan>(선택사항)</SelectSpan>
+                </TitleBox>
+                {etcType === 'model' && <CollapsedValue>{select.model}</CollapsedValue>}
+              </InputHeader>
+              <Input
+                name="customModel"
+                value={select.customModel ?? ''}
+                placeholder="모델명을 입력해주세요"
+                onChange={(e) => onChangeModel(e.target.value)}
+              />
+            </InputBox>
+          )}
           <NoticeBase>
             <TextFiled>
               <NoticeBox>
@@ -267,7 +306,7 @@ const StepComponent = (props: Props) => {
 
       {/* BottomBtn */}
       <BottomButton>
-        <Button onClick={onClick} disabled={!isValid}>
+        <Button onClick={onClick} disabled={!isValid || isEtcModelListOpen}>
           견적 보기
         </Button>
       </BottomButton>
@@ -375,8 +414,9 @@ const SelectBox = styled.div`
   padding: 16px 0;
 `;
 
-const StepHeader = styled.div`
+const StepHeader = styled.div<{ $clickable?: boolean }>`
   position: relative;
+  cursor: ${({ $clickable }) => ($clickable ? 'pointer' : 'default')};
 
   display: flex;
   align-items: center;
@@ -407,6 +447,13 @@ const InputBox = styled.div`
   flex-direction: column;
   gap: 8px;
   padding: 16px 0 180px;
+`;
+
+const InputHeader = styled.div<{ $clickable?: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: ${({ $clickable }) => ($clickable ? 'pointer' : 'default')};
 `;
 
 const NoticeBase = styled.div`

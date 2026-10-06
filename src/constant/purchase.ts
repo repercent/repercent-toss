@@ -1,5 +1,41 @@
 import { PurchaseType } from '../type/purchase';
 
+/** 고를 수 있는 브랜드 */
+export const CATEGORIES = ['갤럭시', '아이폰', '기타'] as const;
+export type Category = (typeof CATEGORIES)[number];
+
+/** 목록에 없는 기종. 시리즈·모델·용량을 고르지 않고 바로 수거 단계로 넘어간다. */
+export const ETC: Category = '기타';
+
+/**
+ * 시리즈·모델 목록 맨 끝에 붙는 '기타' 칩. 슈퍼리스트에서 꺼 둔 기종처럼 목록에 없는 폰을
+ * 뒤로 가지 않고 그 자리에서 받는다. 고르면 브랜드 기타처럼 용량을 건너뛰고 모델명을 직접
+ * 적어 수거 단계로 간다. 위에서 고른 브랜드·시리즈는 그대로 남는다. (repercent-client와 같음)
+ */
+export const ETC_SERIES: Partial<Record<Category, string>> = {
+  갤럭시: '기타 갤럭시',
+  아이폰: '기타 아이폰',
+};
+
+/** 시리즈별 모델 기타. 키는 API가 내려 주는 시리즈 값이다. Z폴드·Z플립에는 두지 않는다. */
+export const ETC_MODELS: Partial<Record<string, string>> = {
+  갤럭시S: '기타 S 시리즈',
+  갤럭시노트: '기타 노트 시리즈',
+  갤럭시A: '기타 A 시리즈',
+  갤럭시M: '기타 M 시리즈',
+};
+
+/**
+ * 기타 칩 바로 앞에 두는 시리즈. 서버는 시리즈를 이름순으로 줘서 갤럭시M이 갤럭시A와
+ * 갤럭시S 사이에 온다. 기획은 기타갤럭시에서 옮겨 온 갤럭시M을 기타 갤럭시 바로 앞에 둔다.
+ */
+export const SERIES_BEFORE_ETC: Partial<Record<Category, string[]>> = {
+  갤럭시: ['갤럭시M'],
+};
+
+/** 어느 단계의 기타를 골랐는지. 브랜드 기타, 시리즈 기타, 모델 기타 */
+export type EtcType = 'brand' | 'series' | 'model';
+
 /** purchases.status (repercent-common-api PurchaseService 기준) */
 export const PURCHASE_STATUS = {
   APPLIED: 100,
