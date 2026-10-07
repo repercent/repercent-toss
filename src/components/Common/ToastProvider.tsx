@@ -4,6 +4,7 @@ import styled, { keyframes } from 'styled-components';
 
 import { ChildrenProps } from '../../type/common';
 import { ToastContext } from '../../context/ToastContext';
+import { SAFE_AREA_BOTTOM } from '../../styles/safeArea';
 
 const TOAST_DURATION = 2500;
 
@@ -49,7 +50,7 @@ const fadeIn = keyframes`
 const ToastBase = styled.div`
   position: fixed;
   left: 50%;
-  bottom: calc(176px + env(safe-area-inset-bottom));
+  bottom: calc(176px + ${SAFE_AREA_BOTTOM});
   z-index: 1100;
   transform: translateX(-50%);
 
