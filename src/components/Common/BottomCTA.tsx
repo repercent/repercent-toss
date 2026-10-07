@@ -22,9 +22,6 @@ const BottomCTA = ({ upper, children }: BottomCTAProps) => {
 
 export default BottomCTA;
 
-/** 하단 CTA에 가려지지 않도록 본문 끝에 두는 여백 */
-export const BOTTOM_CTA_SPACE = 132;
-
 const BottomCTABase = styled.div`
   position: fixed;
   bottom: 0;

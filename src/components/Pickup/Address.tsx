@@ -5,7 +5,8 @@ import styled from 'styled-components';
 import { PurchaseSelectState, ShippingInfo } from '../../type/purchase';
 
 import AddressSearch from './AddressSearch';
-import BottomCTA, { BOTTOM_CTA_SPACE } from '../Common/BottomCTA';
+import BottomCTA from '../Common/BottomCTA';
+import { bottomCtaSpace } from '../Common/bottomCtaSpace';
 import CTAButton from '../Common/Button/CTAButton';
 import { Field, FieldButton, FieldInput } from '../Common/Field';
 
@@ -118,7 +119,7 @@ const AddressBase = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
-  padding: 24px 0 ${BOTTOM_CTA_SPACE}px;
+  padding: 24px 0 ${bottomCtaSpace()};
 `;
 
 const Title = styled.h2`
