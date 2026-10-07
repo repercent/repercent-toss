@@ -53,14 +53,14 @@ pnpm dev
 로컬에서 직접 올릴 수도 있어요. `.env`에 API 주소가 없으면 운영 주소로 빌드되니 대상 서버를 확인해 주세요.
 
 ```bash
-pnpm build       # vite build && ait build → repercent-dev.ait
+pnpm build       # vite build && ait build → 21market.ait
 pnpm run deploy  # ait deploy (`pnpm deploy`는 pnpm 내장 명령이라 run을 붙여요)
 ```
 
-서버 CORS 허용 Origin에 미니앱 Origin이 있어야 API를 호출할 수 있어요(appName `repercent-dev` 기준).
+서버 CORS 허용 Origin에 미니앱 Origin이 있어야 API를 호출할 수 있어요(appName `21market` 기준).
 
-- `https://repercent-dev.apps.tossmini.com`, `https://repercent-dev.private-apps.tossmini.com`
-- `https://repercent-dev.web.tossmini.com`, `https://repercent-dev.private-web.tossmini.com` (2026-08-25 이전 업로드된 3.x 번들)
+- `https://21market.apps.tossmini.com`, `https://21market.private-apps.tossmini.com`
+- `https://21market.web.tossmini.com`, `https://21market.private-web.tossmini.com` (2026-08-25 이전 업로드된 3.x 번들)
 
 SDK 3.x 번들을 출시하면 2.x로 되돌릴 수 없으니 콘솔 QR 테스트를 충분히 한 뒤 출시해 주세요.
 
