@@ -65,6 +65,11 @@ export default defineConfig(({ command, mode }) => {
           target: 'https://dev-common-api-purchase.repercent.com',
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ''),
+          // 브라우저는 POST에 Origin(localhost:5173)을 붙이고, 서버 CORS 허용 목록에는 이 주소가 없어 403이 난다.
+          // 프록시는 서버 간 요청이라 CORS가 필요 없으므로 Origin을 빼고 넘긴다.
+          configure: (proxy) => {
+            proxy.on('proxyReq', (proxyReq) => proxyReq.removeHeader('origin'));
+          },
         },
       },
     },
