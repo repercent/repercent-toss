@@ -68,10 +68,10 @@
 지금 운영·개발 purchase 서버 모두 미니앱 Origin 요청을 403으로 거부해요.
 
 - [x] `app/purchase` `CorsConfig`에 아래 Origin 추가 + `CorsConfigTest` 추가 → repercent/repercent-common-api#825 (dev 대상)
-  - `https://repercent-toss.apps.tossmini.com`, `https://repercent-toss.private-apps.tossmini.com`
-  - `https://repercent-toss.web.tossmini.com`, `https://repercent-toss.private-web.tossmini.com`
+  - `https://repercent-dev.apps.tossmini.com`, `https://repercent-dev.private-apps.tossmini.com`
+  - `https://repercent-dev.web.tossmini.com`, `https://repercent-dev.private-web.tossmini.com`
 - [ ] #825 머지 → dev 배포 → QR 테스트 → main 대상 PR · 배포
-- 콘솔 appName이 `repercent-toss`가 아니면 Origin과 `apps-in-toss.config.ts`를 같이 바꿔야 해요. appName은 등록 후 바꿀 수 없어요.
+- 콘솔 appName은 `repercent-dev`로 등록했어요(appName에 `toss`를 넣을 수 없어서). Origin과 `apps-in-toss.config.ts`가 이 값과 같아야 하고, appName은 등록 후 바꿀 수 없어요.
 
 ### 3. 도로명주소 API 승인키 — 출시 필수
 
@@ -116,7 +116,7 @@
   - 규격: 600×600px PNG, 정사각형(둥근 모서리 금지), 배경색 필수(투명 금지), 토스 아이콘·리소스 사용·가공 금지
   - 후보: [`docs/assets/console-logo-600.png`](./assets/console-logo-600.png). 웹(repercent-client) 앱 아이콘 `public/img/logo/app_icon.png`(1024×1024)을 흰 배경 600×600, 알파 없는 PNG로 줄인 거예요. 18px 헤더 아이콘에서 글자가 작아 보일 수 있으니 여백을 줄인 버전이 필요한지 디자인에 확인해요.
   - Figma 헤더의 로고(파란 바탕 집 모양 아이콘, 29개 화면 공통)는 실제 리퍼센트 로고가 아닌 시안 자리표시로 보여요. 참고 캡처: [`docs/assets/figma-header.png`](./assets/figma-header.png)
-- [ ] appName `repercent-toss`: 코드(`apps-in-toss.config.ts`)·서버 CORS Origin과 같아야 하고, **등록 후 바꿀 수 없어요.**
+- [x] appName `repercent-dev` 등록 (`toss`가 들어간 이름은 쓸 수 없음). 코드(`apps-in-toss.config.ts`)·서버 CORS Origin이 같아야 하고, **등록 후 바꿀 수 없어요.**
 - [ ] 영문명(15자 이내), 카테고리. 앱 정보 검토는 영업일 3~7일이에요.
 - [ ] 중고폰 매입이 어떤 카테고리·정책에 해당하는지 채널톡으로 사전 문의 (중고거래는 별도 서류 대상)
 - [ ] `pnpm build` → 콘솔 업로드(또는 `pnpm run deploy`) → QR로 토스 앱 테스트 → 검토 요청 → 출시
