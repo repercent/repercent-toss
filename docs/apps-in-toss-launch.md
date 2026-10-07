@@ -13,7 +13,7 @@
 | purchase 서버 CORS에 미니앱 Origin 추가         | dev 반영 (repercent-common-api#825), main 반영 필요                                        |
 | 토스 로그인 연동                                | 앱 구현 완료. auth 서버 repercent-auth#63 미병합, 콘솔 설정 필요 ([설계](./toss-login.md)) |
 | 배포 키                                         | dev: AWS Secrets Manager로 전환 완료, 앱인토스 API 키 입력 남음. prod: 시작 전             |
-| 내비게이션 바(헤더)                             | 방침 정함. 설정·완료 화면 처리 남음 ([아래](#7-내비게이션-바헤더))                         |
+| 내비게이션 바(헤더)                             | 설정·신청 완료 화면 처리 완료, QR 확인 남음 ([아래](#7-내비게이션-바헤더))                 |
 | 사업자 등록 · 콘솔 앱 등록 · 검수 · 출시        | 시작 전 ([아래](#6-사업자-등록--콘솔-앱-등록--검수--출시))                                 |
 
 ## 완료한 작업
@@ -68,10 +68,10 @@
 지금 운영·개발 purchase 서버 모두 미니앱 Origin 요청을 403으로 거부해요.
 
 - [x] `app/purchase` `CorsConfig`에 아래 Origin 추가 + `CorsConfigTest` 추가 → repercent/repercent-common-api#825 (dev 대상)
-  - `https://repercent-toss.apps.tossmini.com`, `https://repercent-toss.private-apps.tossmini.com`
-  - `https://repercent-toss.web.tossmini.com`, `https://repercent-toss.private-web.tossmini.com`
+  - `https://21market.apps.tossmini.com`, `https://21market.private-apps.tossmini.com`
+  - `https://21market.web.tossmini.com`, `https://21market.private-web.tossmini.com`
 - [ ] #825 머지 → dev 배포 → QR 테스트 → main 대상 PR · 배포
-- 콘솔 appName이 `repercent-toss`가 아니면 Origin과 `apps-in-toss.config.ts`를 같이 바꿔야 해요. appName은 등록 후 바꿀 수 없어요.
+- 콘솔 appName은 회사 계정 워크스페이스의 `21market`이에요(2026-10-07 확정, `toss`가 들어간 이름은 등록 불가). Origin과 `apps-in-toss.config.ts`가 이 값과 같아야 하고, appName은 등록 후 바꿀 수 없어요.
 
 ### 3. 도로명주소 API 승인키 — 출시 필수
 
@@ -112,9 +112,11 @@
 **앱 정보 (내비게이션 바 제목·아이콘)**
 
 - [ ] 앱 이름 `리퍼센트`: 토스 앱과 상단 내비게이션 바 제목에 보여요. 나중에 수정할 수 있어요.
-- [ ] 로고: 비게임 앱은 상단 내비게이션 바 아이콘으로도 쓰여요. 디자인에 아래 규격으로 요청해요.
-  - 600×600px PNG, 정사각형(둥근 모서리 금지), 배경색 필수(투명 금지), 토스 아이콘·리소스 사용·가공 금지
-- [ ] appName `repercent-toss`: 코드(`apps-in-toss.config.ts`)·서버 CORS Origin과 같아야 하고, **등록 후 바꿀 수 없어요.**
+- [ ] 로고: 비게임 앱은 상단 내비게이션 바 아이콘으로도 쓰여요.
+  - 규격: 600×600px PNG, 정사각형(둥근 모서리 금지), 배경색 필수(투명 금지), 토스 아이콘·리소스 사용·가공 금지
+  - 후보: [`docs/assets/console-logo-600.png`](./assets/console-logo-600.png). 웹(repercent-client) 앱 아이콘 `public/img/logo/app_icon.png`(1024×1024)을 흰 배경 600×600, 알파 없는 PNG로 줄인 거예요. 18px 헤더 아이콘에서 글자가 작아 보일 수 있으니 여백을 줄인 버전이 필요한지 디자인에 확인해요.
+  - Figma 헤더의 로고(파란 바탕 집 모양 아이콘, 29개 화면 공통)는 실제 리퍼센트 로고가 아닌 시안 자리표시로 보여요. 참고 캡처: [`docs/assets/figma-header.png`](./assets/figma-header.png)
+- [x] appName `21market` 등록 (회사 계정 워크스페이스, `toss`가 들어간 이름은 쓸 수 없음). 코드(`apps-in-toss.config.ts`)·서버 CORS Origin이 같아야 하고, **등록 후 바꿀 수 없어요.**
 - [ ] 영문명(15자 이내), 카테고리. 앱 정보 검토는 영업일 3~7일이에요.
 - [ ] 중고폰 매입이 어떤 카테고리·정책에 해당하는지 채널톡으로 사전 문의 (중고거래는 별도 서류 대상)
 - [ ] `pnpm build` → 콘솔 업로드(또는 `pnpm run deploy`) → QR로 토스 앱 테스트 → 검토 요청 → 출시
@@ -134,8 +136,8 @@ Figma 맨 위 줄(`<` · 아이콘 · 리퍼센트 · `···` · `X`)은 앱인
 
 시안에 맞추려면:
 
-- [ ] 홈 버튼 끄기: `navigationBar: { withHomeButton: false }` (시안에 홈 버튼 없음)
-- [ ] 신청 완료 화면(`/complete`): 뒤로 버튼 숨김(`NavigationBar.setOptions({ withBackButton: false })`, 떠날 때 되돌림) + `backEvent`로 메인 이동. 지금은 뒤로 가면 신청 흐름(주소 입력)으로 돌아가요.
+- [x] `apps-in-toss.config.ts`의 `navigationBar`를 시안 컴포넌트 속성(`Back Button=True`, `Home=False`, `Title Area=True`, `Theme=Light`)과 같게 설정
+- [x] 신청 완료 화면(`/complete`, 시안 `Back Button=False`): `useHideBackButton`으로 뒤로 버튼을 숨기고(떠날 때 되돌림), 시스템 뒤로가기는 `backEvent`로 받아 닫기와 같이 메인으로 보내요.
 - [ ] QR 테스트로 확인: 첫 화면에서 뒤로를 누를 때 동작(문서에 없음), `NavigationBar.setOptions` 지원 토스 앱 버전(문서에 없음 → 호출 실패해도 화면은 계속 동작하게)
 
 ### 8. 배포 키

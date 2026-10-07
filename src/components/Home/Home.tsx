@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 interface HomeProps {
   /** 판매 내역 카드 보조 문구 (진행 중인 판매 건수 또는 로그인 안내) */
@@ -26,7 +26,7 @@ const Home = ({ saleSummary, onOpenHistory }: HomeProps) => {
       </Header>
 
       <HeroImage>
-        <img src="/img/home/money.png" alt="" width={219} height={155} />
+        <img src="/img/home/money.png" alt="5만 원권 지폐" width={219} height={155} />
       </HeroImage>
 
       <InfoSection>
@@ -95,11 +95,31 @@ const SubTitle = styled.p`
   color: #8b95a1;
 `;
 
+const float = keyframes`
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(-2deg);
+  }
+`;
+
 const HeroImage = styled.div`
   height: 200px;
   display: flex;
   align-items: center;
   justify-content: center;
+
+  & img {
+    animation: ${float} 3s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    & img {
+      animation: none;
+    }
+  }
 `;
 
 const InfoSection = styled.div`

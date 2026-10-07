@@ -7,11 +7,11 @@
 
 ## 1. 값 준비
 
-| 이름                | 발급 위치                                                                                                                                                               |
-| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `AIT_API_KEY`       | [앱인토스 콘솔](https://apps-in-toss.toss.im/) → 워크스페이스 선택 → 왼쪽 메뉴 **키** → 발급. 접근 범위는 `repercent-toss` 앱만. 발급할 때만 보이니 바로 복사해 두세요. |
-| `VITE_JUSO_API_KEY` | [주소기반산업지원서비스](https://business.juso.go.kr) → API 신청 → 도로명주소 **검색 API** 승인키                                                                       |
-| `SLACK_WEBHOOK_URL` | (선택) 배포 결과를 받을 Slack 채널의 Incoming Webhook 주소                                                                                                              |
+| 이름                | 발급 위치                                                                                                                                                         |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AIT_API_KEY`       | [앱인토스 콘솔](https://apps-in-toss.toss.im/) → 워크스페이스 선택 → 왼쪽 메뉴 **키** → 발급. 접근 범위는 `21market` 앱만. 발급할 때만 보이니 바로 복사해 두세요. |
+| `VITE_JUSO_API_KEY` | [주소기반산업지원서비스](https://business.juso.go.kr) → API 신청 → 도로명주소 **검색 API** 승인키                                                                 |
+| `SLACK_WEBHOOK_URL` | (선택) 배포 결과를 받을 Slack 채널의 Incoming Webhook 주소                                                                                                        |
 
 ## 2. dev: AWS Secrets Manager
 
@@ -108,4 +108,4 @@ EOF
 | `Configure AWS credentials` 실패 (dev) | job에 `environment:`가 없는지, dev 브랜치에서 실행했는지   |
 | "secret을 설정해야 합니다" (prod)      | Environment 이름 `prod`와 secret 이름 철자                 |
 | 실행이 대기하다 거부됨 (prod)          | Environment `prod`의 배포 브랜치 규칙이 `main`인지         |
-| `ait deploy` 단계 실패                 | API 키의 앱 접근 범위, 콘솔에 `repercent-toss` 앱이 있는지 |
+| `ait deploy` 단계 실패                 | API 키의 앱 접근 범위, 콘솔에 `21market` 앱이 있는지       |
