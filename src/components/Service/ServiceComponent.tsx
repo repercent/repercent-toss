@@ -9,6 +9,7 @@ import { formatPrice } from '../../utils/format';
 import usePurchaseHero, { getPriceDiff } from '../../hooks/usePurchaseHero';
 
 import Button from '../Common/Button/Button';
+import { SAFE_AREA_BOTTOM } from '../../styles/safeArea';
 
 const PICKUP_METHODS = [
   { image: '/img/service/step_kit.png', label: '방문 수거' },
@@ -820,6 +821,6 @@ const BottomButton = styled.div`
   width: 100%;
   max-width: 720px;
   min-width: 280px;
-  padding: 8px 16px calc(8px + env(safe-area-inset-bottom));
+  padding: 8px 16px calc(8px + ${SAFE_AREA_BOTTOM});
   background-color: #fff;
 `;

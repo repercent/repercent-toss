@@ -12,7 +12,7 @@
 | API 주소를 빌드용 HTTPS 주소로 전환             | 완료                                                                                       |
 | purchase 서버 CORS에 미니앱 Origin 추가         | dev 반영 (repercent-common-api#825), main 반영 필요                                        |
 | 토스 로그인 연동                                | 앱 구현 완료. auth 서버 repercent-auth#63 미병합, 콘솔 설정 필요 ([설계](./toss-login.md)) |
-| 배포 키                                         | dev: AWS Secrets Manager로 전환 완료, 앱인토스 API 키 입력 남음. prod: 시작 전             |
+| 배포 키                                         | dev·prod 모두 AWS Secrets Manager에서 읽음. 앱인토스 API 키·운영 주소 키 입력 남음         |
 | 내비게이션 바(헤더)                             | 설정·신청 완료 화면 처리 완료, QR 확인 남음 ([아래](#7-내비게이션-바헤더))                 |
 | 사업자 등록 · 콘솔 앱 등록 · 검수 · 출시        | 시작 전 ([아래](#6-사업자-등록--콘솔-앱-등록--검수--출시))                                 |
 
@@ -138,13 +138,14 @@ Figma 맨 위 줄(`<` · 아이콘 · 리퍼센트 · `···` · `X`)은 앱인
 
 - [x] `apps-in-toss.config.ts`의 `navigationBar`를 시안 컴포넌트 속성(`Back Button=True`, `Home=False`, `Title Area=True`, `Theme=Light`)과 같게 설정
 - [x] 신청 완료 화면(`/complete`, 시안 `Back Button=False`): `useHideBackButton`으로 뒤로 버튼을 숨기고(떠날 때 되돌림), 시스템 뒤로가기는 `backEvent`로 받아 닫기와 같이 메인으로 보내요.
-- [ ] QR 테스트로 확인: 첫 화면에서 뒤로를 누를 때 동작(문서에 없음), `NavigationBar.setOptions` 지원 토스 앱 버전(문서에 없음 → 호출 실패해도 화면은 계속 동작하게)
+- [ ] QR 테스트로 확인: 첫 화면에서 뒤로를 누르면 미니앱이 종료되는지(비게임 체크리스트 기대 동작), `NavigationBar.setOptions` 지원 토스 앱 버전(문서에 없음 → 호출 실패해도 화면은 계속 동작하게)
 
 ### 8. 배포 키
 
 - [x] dev: workflow가 GitHub OIDC로 AWS 역할 `GitHubActions-dev`를 받아 Secrets Manager `repercent/toss/dev/deploy`를 읽어요 (#12). 주소 키·Slack 웹훅 등록, OIDC·읽기·Slack 알림 동작 확인
 - [ ] dev: 앱인토스 콘솔에서 API 키 발급 → `AIT_API_KEY` 등록 → **Run workflow**로 업로드 확인
-- [ ] prod: dev와 같은 방식으로 전환 (`GitHubActions-prod`에 읽기 권한 추가 → `repercent/toss/prod/deploy`에 값 등록 → `deploy-prod.yml` 수정). 그 전까지 main 병합 시 prod workflow는 설정 확인 단계에서 멈춰요(업로드 없음).
+- [x] prod: `deploy-prod.yml`도 `GitHubActions-prod` 역할로 `repercent/toss/prod/deploy`를 읽어요.
+- [ ] prod: 운영 주소 키·`AIT_API_KEY`를 `repercent/toss/prod/deploy`에 등록. 그 전까지 main 병합 시 prod workflow는 설정 확인 단계에서 멈춰요(업로드 없음).
 
 ### 9. 기술 부채 — 출시 후 가능
 
