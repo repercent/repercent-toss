@@ -1,7 +1,7 @@
 import { defineConfig } from '@apps-in-toss/web-framework/config';
 
 export default defineConfig({
-  appName: 'repercent-dev',
+  appName: '21market',
   brand: {
     primaryColor: '#004EDB',
   },

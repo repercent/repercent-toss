@@ -70,8 +70,8 @@ sequenceDiagram
 - [x] 리퍼센트 access token을 응답 본문으로 반환 (`userId`, `accessToken`, `expiresIn`). 만료되면 미니앱이 다음 사용자 동작에서 다시 로그인
 - [x] 테스트용 인가 코드 처리는 dev 프로필에서만 동작하도록 제한
 - [x] CORS 허용 Origin에 미니앱 Origin 4개 추가 (현재 localhost, `*.repercent.com`만 허용)
-  - `https://repercent-dev.apps.tossmini.com`, `https://repercent-dev.private-apps.tossmini.com`
-  - `https://repercent-dev.web.tossmini.com`, `https://repercent-dev.private-web.tossmini.com`
+  - `https://21market.apps.tossmini.com`, `https://21market.private-apps.tossmini.com`
+  - `https://21market.web.tossmini.com`, `https://21market.private-web.tossmini.com`
 - [ ] 연결 끊기 콜백 엔드포인트: Basic Auth 검증 후 `UNLINK` · `WITHDRAWAL_TERMS` · `WITHDRAWAL_TOSS`에 맞춰 로그아웃·회원 처리
 - [ ] 방화벽 Outbound 허용: `apps-in-toss-api.toss.im` (117.52.3.192, 211.115.96.192, 106.249.5.192 : 443)
 
