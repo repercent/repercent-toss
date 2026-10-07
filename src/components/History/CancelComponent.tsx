@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import { CancelReasonGroup } from '../../constant/purchase';
 
-import BottomCTA, { BOTTOM_CTA_SPACE } from '../Common/BottomCTA';
+import BottomCTA from '../Common/BottomCTA';
+import { bottomCtaSpace } from '../Common/bottomCtaSpace';
 import CTAButton from '../Common/Button/CTAButton';
 
 interface CancelProps {
@@ -19,6 +20,12 @@ const CancelComponent = ({ reasonGroups, submitting, onSubmit }: CancelProps) =>
   const [etcReason, setEtcReason] = useState('');
 
   const cancelReason = selected?.isEtc ? etcReason.trim() : selected?.reason;
+
+  // '직접 입력'은 목록 맨 아래에 새로 생겨 하단 버튼 뒤에 깔리므로, 고르면 입력칸을 화면 가운데로 올린다.
+  const etcBoxRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (selected?.isEtc) etcBoxRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, [selected?.isEtc]);
 
   return (
     <CancelBase>
@@ -56,7 +63,7 @@ const CancelComponent = ({ reasonGroups, submitting, onSubmit }: CancelProps) =>
         ))}
 
         {selected?.isEtc && (
-          <EtcBox>
+          <EtcBox ref={etcBoxRef}>
             <EtcInput
               value={etcReason}
               maxLength={MAX_REASON_LENGTH}
@@ -85,7 +92,7 @@ const CancelComponent = ({ reasonGroups, submitting, onSubmit }: CancelProps) =>
 export default CancelComponent;
 
 const CancelBase = styled.div`
-  padding: 24px 24px ${BOTTOM_CTA_SPACE}px;
+  padding: 24px 24px ${bottomCtaSpace()};
 `;
 
 const Title = styled.h2`
@@ -142,6 +149,8 @@ const HiddenRadio = styled.input`
 
 const EtcBox = styled.div`
   margin-top: -12px;
+  /* 입력할 때 키보드·하단 버튼에 가리지 않도록 스크롤 기준에 버튼 높이를 더한다 */
+  scroll-margin-bottom: ${bottomCtaSpace()};
   padding: 12px 16px;
   border: 1px solid rgba(0, 27, 55, 0.1);
   border-radius: 14px;

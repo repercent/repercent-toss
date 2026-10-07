@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
+import { SAFE_AREA_BOTTOM } from '../../styles/safeArea';
 
 import {
   AddressResult,
@@ -270,7 +271,7 @@ const ClearButton = styled.button`
 const Body = styled.div`
   flex: 1;
   overflow-y: auto;
-  padding: 8px 0 calc(24px + env(safe-area-inset-bottom));
+  padding: 8px 0 calc(24px + ${SAFE_AREA_BOTTOM});
   -webkit-overflow-scrolling: touch;
 `;
 

@@ -4,7 +4,8 @@ import styled from 'styled-components';
 import { BANK_LIST } from '../../constant/purchase';
 import { formatPrice } from '../../utils/format';
 
-import BottomCTA, { BOTTOM_CTA_SPACE } from '../Common/BottomCTA';
+import BottomCTA from '../Common/BottomCTA';
+import { bottomCtaSpace } from '../Common/bottomCtaSpace';
 import BottomSheet from '../Common/BottomSheet';
 import CTAButton from '../Common/Button/CTAButton';
 import Checkbox from '../Common/Checkbox';
@@ -121,7 +122,7 @@ const AccountBase = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
-  padding: 24px 0 ${BOTTOM_CTA_SPACE + 50}px;
+  padding: 24px 0 ${bottomCtaSpace(50)};
 `;
 
 const Header = styled.div`

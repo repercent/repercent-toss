@@ -8,7 +8,8 @@ import { getErrorMessage } from '../../utils/format';
 import useToast from '../../hooks/useToast';
 import useAuth from '../../hooks/useAuth';
 
-import BottomCTA, { BOTTOM_CTA_SPACE } from '../Common/BottomCTA';
+import BottomCTA from '../Common/BottomCTA';
+import { bottomCtaSpace } from '../Common/bottomCtaSpace';
 import CTAButton from '../Common/Button/CTAButton';
 import Checkbox from '../Common/Checkbox';
 
@@ -128,7 +129,7 @@ const AgreementComponent = () => {
 export default AgreementComponent;
 
 const AgreementBase = styled.div`
-  padding-bottom: ${BOTTOM_CTA_SPACE + 50}px;
+  padding-bottom: ${bottomCtaSpace(50)};
 `;
 
 const Top = styled.div`

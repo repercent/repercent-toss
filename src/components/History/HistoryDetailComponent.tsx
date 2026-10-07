@@ -12,6 +12,7 @@ import { formatPhone, formatPrice, getProductName } from '../../utils/format';
 
 import CTAButton from '../Common/Button/CTAButton';
 import ProgressStepper from './ProgressStepper';
+import { SAFE_AREA_BOTTOM } from '../../styles/safeArea';
 
 interface HistoryDetailProps {
   detail: PurchaseDetailData;
@@ -224,7 +225,7 @@ const Body = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
-  padding: 16px 16px calc(40px + env(safe-area-inset-bottom));
+  padding: 16px 16px calc(40px + ${SAFE_AREA_BOTTOM});
 `;
 
 const Section = styled.section`

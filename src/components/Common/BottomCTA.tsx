@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 
 import { ChildrenProps } from '../../type/common';
+import { SAFE_AREA_BOTTOM } from '../../styles/safeArea';
 
 interface BottomCTAProps extends ChildrenProps {
   /** 버튼 위에 노출되는 영역 (동의 체크박스 등) */
@@ -22,9 +23,6 @@ const BottomCTA = ({ upper, children }: BottomCTAProps) => {
 
 export default BottomCTA;
 
-/** 하단 CTA에 가려지지 않도록 본문 끝에 두는 여백 */
-export const BOTTOM_CTA_SPACE = 132;
-
 const BottomCTABase = styled.div`
   position: fixed;
   bottom: 0;
@@ -45,7 +43,7 @@ const TopGradient = styled.div`
 
 const Container = styled.div`
   background-color: #fff;
-  padding-bottom: calc(20px + env(safe-area-inset-bottom));
+  padding-bottom: calc(20px + ${SAFE_AREA_BOTTOM});
 `;
 
 const Upper = styled.div`
