@@ -19,7 +19,7 @@ const PickupTypeSelect = () => {
               <TypeInfo>
                 <Captions>
                   <Caption $accent>추천</Caption>
-                  <Caption>입금까지 1일</Caption>
+                  <Caption>입금까지 1~4일</Caption>
                 </Captions>
                 <TypeTitle>
                   <TypeName>방문수거</TypeName>
@@ -38,7 +38,7 @@ const PickupTypeSelect = () => {
             <TypeButton type="button" onClick={() => navigate('/csv', { state })}>
               <TypeInfo>
                 <Captions>
-                  <Caption>입금까지 1~4일</Caption>
+                  <Caption>입금까지 1~2일</Caption>
                 </Captions>
                 <TypeTitle>
                   <TypeName>편의점 택배</TypeName>

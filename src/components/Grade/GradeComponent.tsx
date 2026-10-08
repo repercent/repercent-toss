@@ -8,7 +8,10 @@ import { IMAGE_URL } from '../../constant/env';
 import H2 from '../Common/Title/H2';
 import H5 from '../Common/Title/H5';
 import BottomSheet from '../Common/BottomSheet';
-import Button from '../Common/Button/Button';
+import BottomCTA from '../Common/BottomCTA';
+import CTAButton from '../Common/Button/CTAButton';
+import { bottomCtaSpace } from '../Common/bottomCtaSpace';
+import PowerOffPhoneNotice from './PowerOffPhoneNotice';
 
 interface GradeProps {
   gradeDetail: PurchaseGrade[];
@@ -69,49 +72,51 @@ const GradeComponent = (props: GradeProps) => {
       </PriceInfoWrapper>
 
       {/* 등급별 가격 */}
-      <GradeMenu>
-        <GradeItem>
-          <GradeTitle>
-            <TitleBox onClick={() => setOpenBottom(true)}>
-              <H5>등급별 예상 견적</H5>
-              <img src="/ico/ico_tooltip.svg" alt="tooltip 아이콘" width={20} height={20} />
-            </TitleBox>
-            <GradeDes>저번 달 대비</GradeDes>
-          </GradeTitle>
-        </GradeItem>
+      <GradeList>
+        <GradeMenu>
+          <GradeItem>
+            <GradeTitle>
+              <TitleBox onClick={() => setOpenBottom(true)}>
+                <H5>등급별 예상 견적</H5>
+                <img src="/ico/ico_tooltip.svg" alt="tooltip 아이콘" width={20} height={20} />
+              </TitleBox>
+              <GradeDes>저번 달 대비</GradeDes>
+            </GradeTitle>
+          </GradeItem>
 
-        {gradeDetail.map(({ grade, description, price, prePrice }) => {
-          const { icon, diff } = getPriceDiffInfo(price, prePrice);
-          return (
-            <GradeItem key={grade}>
-              <GradeItemBox>
-                <GradePriceBox>
-                  <img
-                    src={getGradeIconPath(grade)}
-                    alt={`${grade} 아이콘`}
-                    width={20}
-                    height={20}
-                  />
-                  <GradePriceInfo>
-                    <GradePrice>{price.toLocaleString('ko-KR')}원</GradePrice>
-                    <GradeInfo>{description}</GradeInfo>
-                  </GradePriceInfo>
-                </GradePriceBox>
+          {gradeDetail.map(({ grade, description, price, prePrice }) => {
+            const { icon, diff } = getPriceDiffInfo(price, prePrice);
+            return (
+              <GradeItem key={grade}>
+                <GradeItemBox>
+                  <GradePriceBox>
+                    <img
+                      src={getGradeIconPath(grade)}
+                      alt={`${grade} 아이콘`}
+                      width={20}
+                      height={20}
+                    />
+                    <GradePriceInfo>
+                      <GradePrice>{price.toLocaleString('ko-KR')}원</GradePrice>
+                      <GradeInfo>{description}</GradeInfo>
+                    </GradePriceInfo>
+                  </GradePriceBox>
 
-                <DiffAmountBox>
-                  <img src={icon} alt="price diff 아이콘" width={18} height={18} />
-                  <DiffAmount>{diff.toLocaleString('ko-KR')}원</DiffAmount>
-                </DiffAmountBox>
-              </GradeItemBox>
-            </GradeItem>
-          );
-        })}
-      </GradeMenu>
+                  <DiffAmountBox>
+                    <img src={icon} alt="price diff 아이콘" width={18} height={18} />
+                    <DiffAmount>{diff.toLocaleString('ko-KR')}원</DiffAmount>
+                  </DiffAmountBox>
+                </GradeItemBox>
+              </GradeItem>
+            );
+          })}
+        </GradeMenu>
+        <PowerOffPhoneNotice />
+      </GradeList>
 
-      {/* BottomBtn */}
-      <BottomButton>
-        <Button onClick={onClick}>판매하기</Button>
-      </BottomButton>
+      <BottomCTA>
+        <CTAButton onClick={onClick}>판매하기</CTAButton>
+      </BottomCTA>
 
       {openBottom && (
         <BottomSheet onClose={() => setOpenBottom(false)}>
@@ -135,7 +140,13 @@ const ScdSection = styled.section`
   display: flex;
   flex-direction: column;
   gap: 36px;
-  padding: 16px 16px 120px;
+  padding: 16px 16px ${bottomCtaSpace()};
+`;
+
+const GradeList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 `;
 
 const PriceInfoWrapper = styled.div`
@@ -151,7 +162,7 @@ const PriceInfoTitle = styled.div`
 `;
 
 const ChangeBtn = styled.button`
-  background: ${({ theme }) => theme.primary[700]};
+  background: ${({ theme }) => theme.toss.blue};
   display: flex;
   gap: 4px;
   padding: 4px 8px;
@@ -278,23 +289,4 @@ const ImageBox = styled.div`
     width: 50%;
     margin: 24px auto 0;
   }
-`;
-
-const BottomButton = styled.div`
-  background-color: #fff;
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-
-  max-width: 720px;
-  min-width: 280px;
-  width: 100%;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  padding: 16px;
-  gap: 16px;
 `;

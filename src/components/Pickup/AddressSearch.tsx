@@ -237,7 +237,7 @@ const SearchBox = styled.div`
   background-color: #f9fafb;
 
   &:focus-within {
-    border-color: #3182f6;
+    border-color: ${({ theme }) => theme.toss.blue};
   }
 `;
 
@@ -308,7 +308,7 @@ const GuideLabel = styled.span`
 const GuideExample = styled.span`
   font-size: 14px;
   line-height: 21px;
-  color: #3182f6;
+  color: ${({ theme }) => theme.toss.blue};
 `;
 
 const Message = styled.p`
@@ -352,7 +352,7 @@ const ZipCode = styled.span`
   font-size: 13px;
   font-weight: 600;
   line-height: 18px;
-  color: #3182f6;
+  color: ${({ theme }) => theme.toss.blue};
 `;
 
 const RoadAddr = styled.span`
