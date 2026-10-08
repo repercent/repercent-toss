@@ -162,7 +162,7 @@ const PriceInfoTitle = styled.div`
 `;
 
 const ChangeBtn = styled.button`
-  background: ${({ theme }) => theme.primary[700]};
+  background: #3182f6;
   display: flex;
   gap: 4px;
   padding: 4px 8px;
