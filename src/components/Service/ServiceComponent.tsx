@@ -21,7 +21,7 @@ const PICKUP_METHODS = [
 
 const ServiceComponent = () => {
   const navigate = useNavigate();
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
   // 모델은 화면에 붙은 뒤 받아 온다. 받지 못하면 가격 비교 블록만 빼고 나머지는 그대로 쓴다.
   const { hero, hasFailed } = usePurchaseHero();
   const priceDiff = hero ? getPriceDiff(hero) : 0;
