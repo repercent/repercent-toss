@@ -9,6 +9,7 @@ import { formatPrice } from '../../utils/format';
 import usePurchaseHero, { getPriceDiff } from '../../hooks/usePurchaseHero';
 
 import Button from '../Common/Button/Button';
+import Certification from '../Common/Certification';
 import { SAFE_AREA_BOTTOM } from '../../styles/safeArea';
 
 const PICKUP_METHODS = [
@@ -165,18 +166,7 @@ const ServiceComponent = () => {
 
       {/* 안심거래 */}
       <Block>
-        <CertBanner>
-          <div>
-            <CertSub>국내 최초 중고폰 안심거래사업자</CertSub>
-            <CertTitle>정부가 인증한 표준 플랫폼, 리퍼센트</CertTitle>
-          </div>
-          <img
-            src="/img/service/safe_logo.png"
-            alt="중고단말 안심거래 사업자 인증"
-            width={58}
-            height={58}
-          />
-        </CertBanner>
+        <Certification />
       </Block>
 
       {/* 진행 과정 */}
@@ -647,30 +637,6 @@ const ReviewMeta = styled.div`
   & span:last-child {
     flex-shrink: 0;
   }
-`;
-
-const CertBanner = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 17px;
-  padding: 15px 20px;
-  border-radius: 8px;
-  background-color: #f4f8ff;
-`;
-
-const CertSub = styled.p`
-  font-size: 12px;
-  line-height: 18px;
-  color: #4c5564;
-`;
-
-const CertTitle = styled.p`
-  margin-top: 4px;
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 24px;
-  color: #111828;
 `;
 
 const BlockTitle = styled.h2`
