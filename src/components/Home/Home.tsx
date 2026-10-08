@@ -26,7 +26,7 @@ const Home = ({ saleSummary, onOpenHistory }: HomeProps) => {
       </Header>
 
       <HeroImage>
-        <img src="/img/home/money.png" alt="5만 원권 지폐" width={219} height={155} />
+        <img src="/img/home/money.png" alt="5만 원권 지폐" width={219} height={197} />
       </HeroImage>
 
       <InfoSection>
@@ -116,7 +116,7 @@ const floatSubtle = keyframes`
 `;
 
 /**
- * 이미지 원본 비율(438×393)이 칸(219×155)과 달라 늘어나지 않게 비율을 유지해 가운데 맞춘다.
+ * 시안 칸(219×155)은 이미지 원본 비율(438×393)과 달라, 가로 219에 맞추고 세로는 원본 비율대로 둔다(219×197).
  * iOS '동작 줄이기'를 켠 기기에서도 멈춰 보이지 않도록, 그때는 회전 없이 작게만 움직인다.
  */
 const HeroImage = styled.div`
