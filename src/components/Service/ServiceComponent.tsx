@@ -8,8 +8,10 @@ import { IMAGE_URL } from '../../constant/env';
 import { formatPrice } from '../../utils/format';
 import usePurchaseHero, { getPriceDiff } from '../../hooks/usePurchaseHero';
 
-import Button from '../Common/Button/Button';
-import { SAFE_AREA_BOTTOM } from '../../styles/safeArea';
+import BottomCTA from '../Common/BottomCTA';
+import CTAButton from '../Common/Button/CTAButton';
+import Certification from '../Common/Certification';
+import { bottomCtaSpace } from '../Common/bottomCtaSpace';
 
 const PICKUP_METHODS = [
   { image: '/img/service/step_kit.png', label: '방문 수거' },
@@ -23,6 +25,7 @@ const ServiceComponent = () => {
   // 모델은 화면에 붙은 뒤 받아 온다. 받지 못하면 가격 비교 블록만 빼고 나머지는 그대로 쓴다.
   const { hero, hasFailed } = usePurchaseHero();
   const priceDiff = hero ? getPriceDiff(hero) : 0;
+  const showHero = !hasFailed && (!hero || priceDiff > 0);
 
   const goApply = () => navigate('/step');
 
@@ -66,16 +69,16 @@ const ServiceComponent = () => {
   };
 
   return (
-    <ServiceBase>
+    <ServiceBase $hasHero={showHero}>
       {/* 가격 비교 */}
-      {!hasFailed && (!hero || priceDiff > 0) && (
-        <HeroBlock>
+      {showHero && (
+        <HeroSection>
           <MoneyImage src="/img/service/money_bundle.png" alt="" width={144} height={96} />
           {renderCompare()}
           <CheckPriceButton type="button" onClick={goApply}>
             내 폰은 얼마인지 알아보기
           </CheckPriceButton>
-        </HeroBlock>
+        </HeroSection>
       )}
 
       {/* 서비스 소개 */}
@@ -164,18 +167,7 @@ const ServiceComponent = () => {
 
       {/* 안심거래 */}
       <Block>
-        <CertBanner>
-          <div>
-            <CertSub>국내 최초 중고폰 안심거래사업자</CertSub>
-            <CertTitle>정부가 인증한 표준 플랫폼, 리퍼센트</CertTitle>
-          </div>
-          <img
-            src="/img/service/safe_logo.png"
-            alt="중고단말 안심거래 사업자 인증"
-            width={58}
-            height={58}
-          />
-        </CertBanner>
+        <Certification />
       </Block>
 
       {/* 진행 과정 */}
@@ -261,9 +253,9 @@ const ServiceComponent = () => {
         </FaqList>
       </Block>
 
-      <BottomButton>
-        <Button onClick={goApply}>수거 신청하기</Button>
-      </BottomButton>
+      <BottomCTA>
+        <CTAButton onClick={goApply}>수거 신청하기</CTAButton>
+      </BottomCTA>
     </ServiceBase>
   );
 };
@@ -297,11 +289,12 @@ const ComparePlaceholder = () => (
 
 export default ServiceComponent;
 
-const ServiceBase = styled.main`
+/** 가격 비교 블록은 배경이 화면 맨 위부터 깔리므로, 그 블록이 있을 때는 위 여백을 두지 않는다. */
+const ServiceBase = styled.main<{ $hasHero: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 32px;
-  padding: 24px 0 124px;
+  padding: ${({ $hasHero }) => ($hasHero ? 0 : '24px')} 0 ${bottomCtaSpace()};
 `;
 
 const Block = styled.section`
@@ -312,14 +305,19 @@ const Block = styled.section`
 `;
 
 /** 돈다발 이미지가 제목 오른쪽 위에 겹쳐 걸리도록 기준을 잡는다. */
-const HeroBlock = styled(Block)`
+const HeroSection = styled.section`
   position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 16px 32px;
+  background: linear-gradient(180deg, #fff 0%, #d8e9f5 17.34%);
 `;
 
 const MoneyImage = styled.img`
   position: absolute;
-  top: -19px;
-  right: 7px;
+  top: -3px;
+  right: 1px;
   display: block;
 `;
 
@@ -332,10 +330,10 @@ const CompareBox = styled.div`
 const CompareTitle = styled.h1`
   position: relative;
   padding: 0 8px;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
   line-height: 28px;
-  letter-spacing: -0.4px;
+  letter-spacing: -0.44px;
   color: #202938;
 
   & strong {
@@ -348,9 +346,8 @@ const CompareCard = styled.div`
   flex-direction: column;
   gap: 12px;
   padding: 14px;
-  border: 1px solid #d7edf6;
   border-radius: 14px;
-  background-color: #f9fafc;
+  background-color: #fff;
 `;
 
 const CompareProduct = styled.div`
@@ -372,7 +369,7 @@ const CompareProductImage = styled.div`
 `;
 
 const CompareProductName = styled.p`
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 600;
   line-height: 20px;
   color: #000;
@@ -380,8 +377,8 @@ const CompareProductName = styled.p`
 
 const CompareProductSpec = styled.p`
   margin-top: 4px;
-  font-size: 13px;
-  line-height: 14px;
+  font-size: 15px;
+  line-height: 18px;
   color: #4c5564;
 `;
 
@@ -389,17 +386,29 @@ const ComparePrices = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   height: 80px;
-  border: 1px solid #f5f7f8;
+  padding: 0 4px;
   border-radius: 12px;
-  background-color: #fff;
+  background-color: #f7f9fa;
 `;
 
+/** 칸 사이에 높이 44px 세로 구분선을 둔다. */
 const ComparePrice = styled.div<{ $highlight?: boolean }>`
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 9px;
+  gap: 6px;
+
+  &:not(:first-child)::before {
+    content: '';
+    position: absolute;
+    top: 18px;
+    bottom: 18px;
+    left: 0;
+    width: 1px;
+    background-color: #f1f3f6;
+  }
 
   & span {
     font-size: 14px;
@@ -410,9 +419,9 @@ const ComparePrice = styled.div<{ $highlight?: boolean }>`
 
   & strong {
     font-size: 15px;
-    font-weight: ${({ $highlight }) => ($highlight ? 600 : 400)};
+    font-weight: ${({ $highlight }) => ($highlight ? 700 : 400)};
     line-height: 18px;
-    color: ${({ $highlight, theme }) => ($highlight ? theme.primary[700] : '#9CA2AE')};
+    color: ${({ $highlight }) => ($highlight ? '#384152' : '#9CA2AE')};
   }
 `;
 
@@ -442,11 +451,12 @@ const PlaceholderLines = styled.div`
 `;
 
 const CheckPriceButton = styled.button`
-  height: 44px;
+  height: 48px;
   border-radius: 10px;
-  background-color: #ebf2ff;
-  font-size: 15px;
-  font-weight: 600;
+  background-color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 19px;
   color: ${({ theme }) => theme.primary[700]};
 `;
 
@@ -630,30 +640,6 @@ const ReviewMeta = styled.div`
   }
 `;
 
-const CertBanner = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 17px;
-  padding: 15px 20px;
-  border-radius: 8px;
-  background-color: #f4f8ff;
-`;
-
-const CertSub = styled.p`
-  font-size: 12px;
-  line-height: 18px;
-  color: #4c5564;
-`;
-
-const CertTitle = styled.p`
-  margin-top: 4px;
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 24px;
-  color: #111828;
-`;
-
 const BlockTitle = styled.h2`
   font-size: 20px;
   font-weight: 700;
@@ -809,18 +795,4 @@ const FaqAnswer = styled.p`
   line-height: 21px;
   color: #111828;
   white-space: pre-line;
-`;
-
-const BottomButton = styled.div`
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 100;
-
-  width: 100%;
-  max-width: 720px;
-  min-width: 280px;
-  padding: 8px 16px calc(8px + ${SAFE_AREA_BOTTOM});
-  background-color: #fff;
 `;

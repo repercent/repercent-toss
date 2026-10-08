@@ -2,6 +2,9 @@ import 'styled-components';
 
 declare module 'styled-components' {
   export interface DefaultTheme {
+    toss: {
+      blue: string;
+    };
     primary: {
       700: string;
       10: string;

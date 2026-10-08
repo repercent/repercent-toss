@@ -157,7 +157,7 @@ const EtcBox = styled.div`
   background-color: #f9fafb;
 
   &:focus-within {
-    border-color: #3182f6;
+    border-color: ${({ theme }) => theme.toss.blue};
   }
 `;
 
