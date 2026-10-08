@@ -1,7 +1,9 @@
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import H2 from '../Common/Title/H2';
-import Button from '../Common/Button/Button';
+import BottomCTA from '../Common/BottomCTA';
+import CTAButton from '../Common/Button/CTAButton';
+import { bottomCtaSpace } from '../Common/bottomCtaSpace';
 
 const PurchaseMultiComponent = () => {
   const navigate = useNavigate();
@@ -30,7 +32,7 @@ const PurchaseMultiComponent = () => {
         </MultiDes>
       </MultiTitle>
 
-      <MultiImg src={'/img/purchase/multi.png'} alt="핸드폰 이미지" />
+      <MultiImg src={'/img/purchase/multi.png'} alt="핸드폰 이미지" width={240} height={240} />
 
       <MultiMenu>
         <MultiItem>
@@ -42,7 +44,10 @@ const PurchaseMultiComponent = () => {
           발송 방법 선택 후, 기기를 한 박스에 담아 발송하면 끝!
         </MultiItem>
       </MultiMenu>
-      <Button onClick={handleSubmit}>여러대 한번에 판매하기</Button>
+
+      <BottomCTA>
+        <CTAButton onClick={handleSubmit}>여러대 한번에 판매하기</CTAButton>
+      </BottomCTA>
     </PurchaseMultiBase>
   );
 };
@@ -50,13 +55,14 @@ export default PurchaseMultiComponent;
 
 const PurchaseMultiBase = styled.div`
   position: relative;
-  height: calc(var(--vh, 1vh) * 100);
+  min-height: calc(var(--vh, 1vh) * 100);
 
   display: flex;
   justify-content: space-between;
   flex-direction: column;
+  gap: 24px;
 
-  padding: 16px;
+  padding: 16px 16px ${bottomCtaSpace()};
 `;
 
 const MultiTitle = styled.div`
@@ -70,8 +76,13 @@ const MultiDes = styled.p`
   color: ${({ theme }) => theme.gray[400]};
 `;
 
+/** 원본(520×520) 비율 그대로 240으로 줄여 가운데 둔다. */
 const MultiImg = styled.img`
   display: block;
+  width: 240px;
+  height: 240px;
+  margin: 0 auto;
+  object-fit: contain;
 `;
 
 const MultiMenu = styled.ul`
