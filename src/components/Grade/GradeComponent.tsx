@@ -11,6 +11,7 @@ import BottomSheet from '../Common/BottomSheet';
 import BottomCTA from '../Common/BottomCTA';
 import CTAButton from '../Common/Button/CTAButton';
 import { bottomCtaSpace } from '../Common/bottomCtaSpace';
+import PowerOffPhoneNotice from './PowerOffPhoneNotice';
 
 interface GradeProps {
   gradeDetail: PurchaseGrade[];
@@ -71,44 +72,47 @@ const GradeComponent = (props: GradeProps) => {
       </PriceInfoWrapper>
 
       {/* 등급별 가격 */}
-      <GradeMenu>
-        <GradeItem>
-          <GradeTitle>
-            <TitleBox onClick={() => setOpenBottom(true)}>
-              <H5>등급별 예상 견적</H5>
-              <img src="/ico/ico_tooltip.svg" alt="tooltip 아이콘" width={20} height={20} />
-            </TitleBox>
-            <GradeDes>저번 달 대비</GradeDes>
-          </GradeTitle>
-        </GradeItem>
+      <GradeList>
+        <GradeMenu>
+          <GradeItem>
+            <GradeTitle>
+              <TitleBox onClick={() => setOpenBottom(true)}>
+                <H5>등급별 예상 견적</H5>
+                <img src="/ico/ico_tooltip.svg" alt="tooltip 아이콘" width={20} height={20} />
+              </TitleBox>
+              <GradeDes>저번 달 대비</GradeDes>
+            </GradeTitle>
+          </GradeItem>
 
-        {gradeDetail.map(({ grade, description, price, prePrice }) => {
-          const { icon, diff } = getPriceDiffInfo(price, prePrice);
-          return (
-            <GradeItem key={grade}>
-              <GradeItemBox>
-                <GradePriceBox>
-                  <img
-                    src={getGradeIconPath(grade)}
-                    alt={`${grade} 아이콘`}
-                    width={20}
-                    height={20}
-                  />
-                  <GradePriceInfo>
-                    <GradePrice>{price.toLocaleString('ko-KR')}원</GradePrice>
-                    <GradeInfo>{description}</GradeInfo>
-                  </GradePriceInfo>
-                </GradePriceBox>
+          {gradeDetail.map(({ grade, description, price, prePrice }) => {
+            const { icon, diff } = getPriceDiffInfo(price, prePrice);
+            return (
+              <GradeItem key={grade}>
+                <GradeItemBox>
+                  <GradePriceBox>
+                    <img
+                      src={getGradeIconPath(grade)}
+                      alt={`${grade} 아이콘`}
+                      width={20}
+                      height={20}
+                    />
+                    <GradePriceInfo>
+                      <GradePrice>{price.toLocaleString('ko-KR')}원</GradePrice>
+                      <GradeInfo>{description}</GradeInfo>
+                    </GradePriceInfo>
+                  </GradePriceBox>
 
-                <DiffAmountBox>
-                  <img src={icon} alt="price diff 아이콘" width={18} height={18} />
-                  <DiffAmount>{diff.toLocaleString('ko-KR')}원</DiffAmount>
-                </DiffAmountBox>
-              </GradeItemBox>
-            </GradeItem>
-          );
-        })}
-      </GradeMenu>
+                  <DiffAmountBox>
+                    <img src={icon} alt="price diff 아이콘" width={18} height={18} />
+                    <DiffAmount>{diff.toLocaleString('ko-KR')}원</DiffAmount>
+                  </DiffAmountBox>
+                </GradeItemBox>
+              </GradeItem>
+            );
+          })}
+        </GradeMenu>
+        <PowerOffPhoneNotice />
+      </GradeList>
 
       <BottomCTA>
         <CTAButton onClick={onClick}>판매하기</CTAButton>
@@ -137,6 +141,12 @@ const ScdSection = styled.section`
   flex-direction: column;
   gap: 36px;
   padding: 16px 16px ${bottomCtaSpace()};
+`;
+
+const GradeList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 `;
 
 const PriceInfoWrapper = styled.div`
