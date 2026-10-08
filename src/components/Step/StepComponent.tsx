@@ -10,7 +10,9 @@ import H4 from '../Common/Title/H4';
 import Chip from '../Common/Chip/Chip';
 import BottomSheet from '../Common/BottomSheet';
 import Input from '../Common/Input';
-import Button from '../Common/Button/Button';
+import BottomCTA from '../Common/BottomCTA';
+import CTAButton from '../Common/Button/CTAButton';
+import { bottomCtaSpace } from '../Common/bottomCtaSpace';
 import TextFiled from '../Common/TextFiled/TextFiled';
 
 interface Props {
@@ -299,17 +301,18 @@ const StepComponent = (props: Props) => {
 
       <CheckModel onClick={() => setOpenBottom(true)}>모델명 확인하는 방법</CheckModel>
 
-      {/* 여러대 */}
-      <BulkSendBtnBox>
-        <BulkSendBtn onClick={() => navigate('/multi')}>여러대 한번에 판매하기</BulkSendBtn>
-      </BulkSendBtnBox>
-
-      {/* BottomBtn */}
-      <BottomButton>
-        <Button onClick={onClick} disabled={!isValid || isEtcModelListOpen}>
+      <BottomCTA
+        upper={
+          <BulkSendBtn type="button" onClick={() => navigate('/multi')}>
+            여러대 한 번에 판매하기
+            <img src="/ico/ico_arrow_right_m.svg" alt="" width={24} height={24} />
+          </BulkSendBtn>
+        }
+      >
+        <CTAButton onClick={onClick} disabled={!isValid || isEtcModelListOpen}>
           견적 보기
-        </Button>
-      </BottomButton>
+        </CTAButton>
+      </BottomCTA>
 
       {openBottom && (
         <BottomSheet onClose={() => setOpenBottom(false)}>
@@ -358,7 +361,7 @@ const FirstSection = styled.section`
   flex-direction: column;
 
   margin: 0 auto;
-  padding: 16px 16px 120px;
+  padding: 16px 16px ${bottomCtaSpace(50)};
 `;
 
 const CollapsedRow = styled.div`
@@ -506,38 +509,6 @@ const CheckModel = styled.p`
   }
 `;
 
-const BulkSendBtnBox = styled.div`
-  position: absolute;
-  left: 0;
-  bottom: 0;
-
-  width: 100%;
-  display: flex;
-  justify-content: center;
-`;
-
-const BulkSendBtn = styled.button`
-  position: relative;
-  margin-right: 12px;
-  font-size: 14px;
-  color: ${({ theme }) => theme.primary[700]};
-
-  &::after {
-    content: '';
-    position: absolute;
-
-    background-image: url('/ico/ico_arrow_right.svg');
-    background-size: cover;
-    width: 20px;
-    height: 20px;
-    display: block;
-
-    top: 50%;
-    right: -12px;
-    transform: translateY(-50%);
-  }
-`;
-
 const BottomBox = styled.div`
   height: 100%;
 `;
@@ -577,21 +548,13 @@ const AppleImageBox = styled(SamsungImageBox)`
   aspect-ratio: 1080 / 2937;
 `;
 
-const BottomButton = styled.div`
-  background-color: #fff;
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-
-  max-width: 720px;
-  min-width: 280px;
-  width: 100%;
-
+/** 하단 CTA 위 텍스트 버튼 (TDS 텍스트 버튼 17 Medium) */
+const BulkSendBtn = styled.button`
   display: flex;
   align-items: center;
-  justify-content: space-between;
-
-  padding: 16px;
-  gap: 16px;
+  margin: 0 auto;
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 24px;
+  color: rgba(0, 19, 43, 0.58);
 `;

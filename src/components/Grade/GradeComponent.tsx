@@ -8,7 +8,9 @@ import { IMAGE_URL } from '../../constant/env';
 import H2 from '../Common/Title/H2';
 import H5 from '../Common/Title/H5';
 import BottomSheet from '../Common/BottomSheet';
-import Button from '../Common/Button/Button';
+import BottomCTA from '../Common/BottomCTA';
+import CTAButton from '../Common/Button/CTAButton';
+import { bottomCtaSpace } from '../Common/bottomCtaSpace';
 
 interface GradeProps {
   gradeDetail: PurchaseGrade[];
@@ -108,10 +110,9 @@ const GradeComponent = (props: GradeProps) => {
         })}
       </GradeMenu>
 
-      {/* BottomBtn */}
-      <BottomButton>
-        <Button onClick={onClick}>판매하기</Button>
-      </BottomButton>
+      <BottomCTA>
+        <CTAButton onClick={onClick}>판매하기</CTAButton>
+      </BottomCTA>
 
       {openBottom && (
         <BottomSheet onClose={() => setOpenBottom(false)}>
@@ -135,7 +136,7 @@ const ScdSection = styled.section`
   display: flex;
   flex-direction: column;
   gap: 36px;
-  padding: 16px 16px 120px;
+  padding: 16px 16px ${bottomCtaSpace()};
 `;
 
 const PriceInfoWrapper = styled.div`
@@ -278,23 +279,4 @@ const ImageBox = styled.div`
     width: 50%;
     margin: 24px auto 0;
   }
-`;
-
-const BottomButton = styled.div`
-  background-color: #fff;
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-
-  max-width: 720px;
-  min-width: 280px;
-  width: 100%;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  padding: 16px;
-  gap: 16px;
 `;

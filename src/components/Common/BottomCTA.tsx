@@ -23,6 +23,7 @@ const BottomCTA = ({ upper, children }: BottomCTAProps) => {
 
 export default BottomCTA;
 
+/** 위쪽 그라데이션은 본문이 비쳐 보이는 자리라 터치를 본문으로 넘기고, 흰 영역(Container)만 터치를 받는다. */
 const BottomCTABase = styled.div`
   position: fixed;
   bottom: 0;
@@ -33,15 +34,16 @@ const BottomCTABase = styled.div`
   width: 100%;
   max-width: 720px;
   min-width: 280px;
+  pointer-events: none;
 `;
 
 const TopGradient = styled.div`
   height: 36px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #fff 100%);
-  pointer-events: none;
 `;
 
 const Container = styled.div`
+  pointer-events: auto;
   background-color: #fff;
   padding-bottom: calc(20px + ${SAFE_AREA_BOTTOM});
 `;

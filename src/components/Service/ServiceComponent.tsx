@@ -8,9 +8,10 @@ import { IMAGE_URL } from '../../constant/env';
 import { formatPrice } from '../../utils/format';
 import usePurchaseHero, { getPriceDiff } from '../../hooks/usePurchaseHero';
 
-import Button from '../Common/Button/Button';
+import BottomCTA from '../Common/BottomCTA';
+import CTAButton from '../Common/Button/CTAButton';
 import Certification from '../Common/Certification';
-import { SAFE_AREA_BOTTOM } from '../../styles/safeArea';
+import { bottomCtaSpace } from '../Common/bottomCtaSpace';
 
 const PICKUP_METHODS = [
   { image: '/img/service/step_kit.png', label: '방문 수거' },
@@ -252,9 +253,9 @@ const ServiceComponent = () => {
         </FaqList>
       </Block>
 
-      <BottomButton>
-        <Button onClick={goApply}>수거 신청하기</Button>
-      </BottomButton>
+      <BottomCTA>
+        <CTAButton onClick={goApply}>수거 신청하기</CTAButton>
+      </BottomCTA>
     </ServiceBase>
   );
 };
@@ -293,7 +294,7 @@ const ServiceBase = styled.main<{ $hasHero: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 32px;
-  padding: ${({ $hasHero }) => ($hasHero ? 0 : '24px')} 0 124px;
+  padding: ${({ $hasHero }) => ($hasHero ? 0 : '24px')} 0 ${bottomCtaSpace()};
 `;
 
 const Block = styled.section`
@@ -794,18 +795,4 @@ const FaqAnswer = styled.p`
   line-height: 21px;
   color: #111828;
   white-space: pre-line;
-`;
-
-const BottomButton = styled.div`
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 100;
-
-  width: 100%;
-  max-width: 720px;
-  min-width: 280px;
-  padding: 8px 16px calc(8px + ${SAFE_AREA_BOTTOM});
-  background-color: #fff;
 `;

@@ -78,6 +78,6 @@ const Btn = styled.button<{ $variant: Variant; $size: Size }>`
   }
 
   &:disabled {
-    opacity: 0.4;
+    opacity: 0.3;
   }
 `;
