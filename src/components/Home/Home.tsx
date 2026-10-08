@@ -105,6 +105,20 @@ const float = keyframes`
   }
 `;
 
+const floatSubtle = keyframes`
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+`;
+
+/**
+ * 이미지 원본 비율(438×393)이 칸(219×155)과 달라 늘어나지 않게 비율을 유지해 가운데 맞춘다.
+ * iOS '동작 줄이기'를 켠 기기에서도 멈춰 보이지 않도록, 그때는 회전 없이 작게만 움직인다.
+ */
 const HeroImage = styled.div`
   height: 200px;
   display: flex;
@@ -112,12 +126,14 @@ const HeroImage = styled.div`
   justify-content: center;
 
   & img {
+    object-fit: contain;
     animation: ${float} 3s ease-in-out infinite;
+    will-change: transform;
   }
 
   @media (prefers-reduced-motion: reduce) {
     & img {
-      animation: none;
+      animation: ${floatSubtle} 4s ease-in-out infinite;
     }
   }
 `;
