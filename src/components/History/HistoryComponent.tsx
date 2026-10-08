@@ -197,8 +197,8 @@ const Empty = styled.div`
 const EmptyButton = styled.button`
   padding: 8px 14px;
   border-radius: 10px;
-  background-color: #ebf2ff;
+  background-color: #e8f3ff;
   font-size: 15px;
   font-weight: 600;
-  color: ${({ theme }) => theme.primary[700]};
+  color: ${({ theme }) => theme.toss.blue};
 `;
