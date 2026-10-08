@@ -80,7 +80,7 @@ const FieldBox = styled.div`
   text-align: left;
 
   &:focus-within {
-    border-color: #3182f6;
+    border-color: ${({ theme }) => theme.toss.blue};
   }
 `;
 

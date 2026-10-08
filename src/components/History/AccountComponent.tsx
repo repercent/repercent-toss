@@ -171,7 +171,7 @@ const BankButton = styled.button<{ $selected: boolean }>`
   align-items: center;
   gap: 8px;
   padding: 12px;
-  border: 1px solid ${({ $selected }) => ($selected ? '#3182F6' : 'transparent')};
+  border: 1px solid ${({ $selected, theme }) => ($selected ? theme.toss.blue : 'transparent')};
   border-radius: 12px;
   background-color: #f9fafb;
   font-size: 15px;

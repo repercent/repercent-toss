@@ -51,7 +51,7 @@ const Message = styled.p`
 const LoginButton = styled.button`
   padding: 10px 18px;
   border-radius: 12px;
-  background-color: #3182f6;
+  background-color: ${({ theme }) => theme.toss.blue};
   font-size: 15px;
   font-weight: 600;
   color: #fff;

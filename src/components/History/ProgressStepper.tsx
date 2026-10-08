@@ -77,7 +77,7 @@ const Dot = styled.span<{ $current: boolean }>`
       ? css`
           width: 8px;
           height: 8px;
-          background-color: #3182f6;
+          background-color: ${({ theme }) => theme.toss.blue};
           box-shadow: 0 0 0 4px rgba(26, 122, 249, 0.14);
         `
       : css`

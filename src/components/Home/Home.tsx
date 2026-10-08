@@ -85,7 +85,7 @@ const Title = styled.h1`
   color: #191f28;
 
   & strong {
-    color: ${({ theme }) => theme.primary[700]};
+    color: ${({ theme }) => theme.toss.blue};
   }
 `;
 
@@ -156,7 +156,7 @@ const PrimaryAction = styled.button`
   justify-content: space-between;
   padding: 22px;
   border-radius: 20px;
-  background: linear-gradient(90deg, #3182f6 0%, #2779ef 100%);
+  background: linear-gradient(90deg, ${({ theme }) => theme.toss.blue} 0%, #2779ef 100%);
   box-shadow: 0 0 12px rgba(49, 130, 246, 0.16);
 
   font-size: 18px;

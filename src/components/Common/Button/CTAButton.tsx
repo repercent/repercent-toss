@@ -65,7 +65,7 @@ const Btn = styled.button<{ $variant: Variant; $size: Size }>`
   ${({ $variant }) =>
     $variant === 'primary'
       ? css`
-          background-color: #3182f6;
+          background-color: ${({ theme }) => theme.toss.blue};
           color: #fff;
         `
       : css`
