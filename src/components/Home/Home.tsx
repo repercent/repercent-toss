@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
 
 interface HomeProps {
-  /** 판매 내역 카드 보조 문구 (진행 중인 판매 건수 또는 로그인 안내) */
+  /** 판매 내역 카드 보조 문구 (진행 중인 판매 건수) */
   saleSummary: string;
   onOpenHistory: () => void;
 }
