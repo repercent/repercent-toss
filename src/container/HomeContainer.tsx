@@ -10,11 +10,11 @@ import Home from '../components/Home/Home';
 
 const HomeContainer = () => {
   const navigate = useNavigate();
-  const { status, userId, login } = useAuth();
+  const { userId, login } = useAuth();
   const [inProgressCount, setInProgressCount] = useState(0);
 
   useEffect(() => {
-    if (status !== 'member' || !userId) return;
+    if (!userId) return;
 
     const fetchHistory = async () => {
       try {
@@ -31,22 +31,15 @@ const HomeContainer = () => {
     };
 
     fetchHistory();
-  }, [status, userId]);
+  }, [userId]);
 
-  // 판매 내역은 로그인이 필요해서, 카드를 눌렀을 때 토스 로그인을 시작한다
+  // 앱을 켜 둔 채 토큰이 만료됐으면 다시 로그인한 뒤 이동한다
   const openHistory = async () => {
     if (!(await login())) return;
     navigate('/history');
   };
 
-  const saleSummary =
-    status === 'member'
-      ? `진행 중인 판매 ${inProgressCount}건`
-      : status === 'guest'
-        ? '토스 로그인 후 확인할 수 있어요'
-        : '';
-
-  return <Home saleSummary={saleSummary} onOpenHistory={openHistory} />;
+  return <Home saleSummary={`진행 중인 판매 ${inProgressCount}건`} onOpenHistory={openHistory} />;
 };
 
 export default HomeContainer;
