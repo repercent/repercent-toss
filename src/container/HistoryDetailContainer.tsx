@@ -13,7 +13,6 @@ import useAuth from '../hooks/useAuth';
 
 import HistoryDetailComponent from '../components/History/HistoryDetailComponent';
 import Dialog from '../components/Common/Dialog';
-import LoginRequired from '../components/Common/LoginRequired';
 
 type DialogType = 'CANCEL' | 'CONFIRM_SALE' | 'REQUEST_PICKUP';
 
@@ -45,7 +44,7 @@ const HistoryDetailContainer = () => {
   const navigate = useNavigate();
   const { purchaseId } = useParams();
   const showToast = useToast();
-  const { status, userId } = useAuth();
+  const { userId } = useAuth();
 
   const [detail, setDetail] = useState<PurchaseDetailData | null>(null);
   const [message, setMessage] = useState('');
@@ -66,9 +65,9 @@ const HistoryDetailContainer = () => {
   }, [purchaseId, userId]);
 
   useEffect(() => {
-    if (status !== 'member') return;
+    if (!userId) return;
     fetchDetail();
-  }, [status, fetchDetail]);
+  }, [userId, fetchDetail]);
 
   const handleAction = (action: PurchaseAction) => {
     switch (action) {
@@ -125,7 +124,6 @@ const HistoryDetailContainer = () => {
     if (dialog === 'REQUEST_PICKUP') requestPickup();
   };
 
-  if (status === 'guest') return <LoginRequired />;
   if (message) return <Message>{message}</Message>;
   if (!detail) return null;
 
