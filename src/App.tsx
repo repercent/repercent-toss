@@ -9,6 +9,7 @@ import theme from './styles/theme';
 // components
 import ToastProvider from './components/Common/ToastProvider';
 import AuthProvider from './components/Common/AuthProvider';
+import IntroGate from './components/Common/IntroGate';
 import HomeContainer from './container/HomeContainer';
 import ServiceComponent from './components/Service/ServiceComponent';
 import StepContainer from './container/StepContainer';
@@ -45,24 +46,26 @@ function App() {
         <GlobalStyles />
         <ToastProvider>
           <AuthProvider>
-            <Routes>
-              <Route path="/history/:purchaseId/account" element={<AccountContainer />} />
-              <Route path="/history/:purchaseId/cancel" element={<CancelContainer />} />
-              <Route path="/history/:purchaseId" element={<HistoryDetailContainer />} />
-              <Route path="/history" element={<HistoryContainer />} />
-              <Route path="/complete" element={<CompleteComponent />} />
-              <Route path="/logout-guide" element={<LogoutGuideComponent />} />
-              <Route path="/agreement" element={<AgreementComponent />} />
-              <Route path="/address" element={<Address />} />
-              <Route path="/csv" element={<CsvComponent />} />
-              <Route path="/kit" element={<KitComponent />} />
-              <Route path="/pickup" element={<PickupTypeSelect />} />
-              <Route path="/grade" element={<GradeContainer />} />
-              <Route path="/multi" element={<PurchaseMultiComponent />} />
-              <Route path="/step" element={<StepContainer />} />
-              <Route path="/service" element={<ServiceComponent />} />
-              <Route path="/" element={<HomeContainer />} />
-            </Routes>
+            <IntroGate>
+              <Routes>
+                <Route path="/history/:purchaseId/account" element={<AccountContainer />} />
+                <Route path="/history/:purchaseId/cancel" element={<CancelContainer />} />
+                <Route path="/history/:purchaseId" element={<HistoryDetailContainer />} />
+                <Route path="/history" element={<HistoryContainer />} />
+                <Route path="/complete" element={<CompleteComponent />} />
+                <Route path="/logout-guide" element={<LogoutGuideComponent />} />
+                <Route path="/agreement" element={<AgreementComponent />} />
+                <Route path="/address" element={<Address />} />
+                <Route path="/csv" element={<CsvComponent />} />
+                <Route path="/kit" element={<KitComponent />} />
+                <Route path="/pickup" element={<PickupTypeSelect />} />
+                <Route path="/grade" element={<GradeContainer />} />
+                <Route path="/multi" element={<PurchaseMultiComponent />} />
+                <Route path="/step" element={<StepContainer />} />
+                <Route path="/service" element={<ServiceComponent />} />
+                <Route path="/" element={<HomeContainer />} />
+              </Routes>
+            </IntroGate>
           </AuthProvider>
         </ToastProvider>
       </ThemeProvider>
