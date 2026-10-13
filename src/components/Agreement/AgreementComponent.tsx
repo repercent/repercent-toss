@@ -72,6 +72,8 @@ const AgreementComponent = () => {
       ...state,
       userId,
       subcategory: state.customModel ? state.customModel : state.subcategory,
+      // 신청 경로. 서버가 건마다 남기고 어드민에 앱인토스 신청으로 표시한다.
+      entryPath: 'TOSS',
     };
 
     try {
